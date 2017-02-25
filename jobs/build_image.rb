@@ -5,23 +5,23 @@ module Jobs
     def execute(args)
       Excon.defaults[:write_timeout] = 1000
       Excon.defaults[:read_timeout] = 1000
+      name = args[:name]
+      path = args[:path]
 
-      if args.image.namespace
-        Docker::Image.create('fromImage' => args.image.path) do |v|
-          if (log = JSON.parse(v)) && log.has_key?("stream")
-            puts log["stream"]
-          end
+      if path == 'hub'
+        Docker::Image.create('fromImage' => name) do |v|
+          puts v
         end
       else
-        Docker::Image.build_from_dir(args.image.path, {'t' => args.image.tag})  do |v|
+        Docker::Image.build_from_dir(path, {'t' => name})  do |v|
           if (log = JSON.parse(v)) && log.has_key?("stream")
             puts log["stream"]
           end
         end
       end
 
-      status = true
-      DiscourseMachineLearning::MachineLearningController.update_status(args.image.tag, status)
+      status = Docker::Image.exist?(name)
+      DiscourseMachineLearning::MlController.update_status(name, status)
     end
   end
 end

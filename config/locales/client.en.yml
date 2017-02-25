@@ -1,0 +1,11 @@
+en:
+  js:
+    ml:
+      admin:
+        models:
+          title: "Machine Learning Models"
+          name: "Models"
+          status: "Status"
+          build: "Build"
+          run: "Latest Run"
+          data: "Using Data"
