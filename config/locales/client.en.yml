@@ -2,10 +2,13 @@ en:
   js:
     ml:
       admin:
+        title: "ML"
         models:
-          title: "Machine Learning Models"
-          name: "Models"
+          title: "Models"
+          label: "Model"
+          image: "Image"
           status: "Status"
           build: "Build"
-          run: "Latest Run"
-          data: "Using Data"
+          run: "Run"
+          data: "Data"
+          actions: "Actions"

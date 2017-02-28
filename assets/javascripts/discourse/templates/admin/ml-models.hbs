@@ -1,0 +1,39 @@
+<div class='table ml-models'>
+  <div class="heading-container">
+    <div class="col heading first model-label">{{i18n 'ml.admin.models.label'}}</div>
+    <div class="col heading model-image">{{i18n 'ml.admin.models.image'}}</div>
+    <div class="col heading model-run">{{i18n 'ml.admin.models.run'}}</div>
+    <div class="col heading model-data">{{i18n 'ml.admin.models.data'}}</div>
+    <div class="col heading model-status">{{i18n 'ml.admin.models.status'}}</div>
+    <div class="col heading model-actions">{{i18n 'ml.admin.models.actions'}}</div>
+    <div class="clearfix"></div>
+  </div>
+
+  {{#conditional-loading-spinner condition=loading}}
+    {{#each models as |m|}}
+      <div class='admin-list-item'>
+        <div class="col value first model-label">
+          {{m.label}}
+        </div>
+        <div class="col value model-image">
+          {{m.namespace}}
+        </div>
+        <div class="col value model-run">
+          {{m.run}}
+        </div>
+        <div class="col value model-data">
+          {{m.data}}
+        </div>
+        <div class="col value model-status">
+          {{m.status}}
+        </div>
+        <div class="col value model-actions">
+          <a {{action "buildModelImage" m}} class="btn btn-small">{{i18n 'ml.admin.models.build'}}</a>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    {{else}}
+      {{i18n 'search.no_results'}}
+    {{/each}}
+  {{/conditional-loading-spinner}}
+</div>

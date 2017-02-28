@@ -1,0 +1,35 @@
+@import "common/admin/admin_base";
+@import "common/components/navs.css.scss";
+
+.ml-models {
+  @extend .staff-actions;
+  width: 100%;
+
+  .model-label {
+    width: 10%;
+  }
+
+  .model-image {
+    width: 20%;
+  }
+
+  .model-run {
+    width: 15%;
+  }
+
+  .model-data {
+    width: 15%;
+  }
+
+  .model-status {
+    width: 10%;
+  }
+
+  .model-actions {
+    width: 25%;
+  }
+}
+
+.ml-nav-button {
+  @extend .nav-pills;
+}

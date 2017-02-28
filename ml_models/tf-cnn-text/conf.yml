@@ -1,3 +1,4 @@
+---
 namespace: 'tensorflow/tensorflow:latest'
-location: 'hub'
+path: 'hub'
 cmd: "python ./train.py --train_data_path='/data/%{version}/train.txt'"

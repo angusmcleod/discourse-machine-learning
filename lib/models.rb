@@ -1,49 +1,69 @@
 require 'docker'
 
 module DiscourseMachineLearning
+  class Models
+    include ActiveModel::SerializerSupport
 
-  class MlModel
-    attr_reader :name,
-    attr_accessor :train_cmd, :image, :current_run, :current_data
+    attr_reader :label
+    attr_accessor :conf, :namespace, :status
 
-    DIR = "#{Rails.root}/plugins/discourse-machine-learning/ml_models"
+    DIR = "#{Rails.root}/plugins/discourse-machine-learning/ml_models/"
 
-    def initialize(name)
-      @name = name
+    def initialize(label)
+      @label = label
+      @conf = YAML.load(File.read(File.join(DIR, @label, 'conf.yml')))
+      @namespace = @conf["namespace"]
+      @status = get_status
     end
 
-    def self.conf(name)
-      return @conf if @conf
+    def self.statuses
+      @statuses ||= Enum.new(no_image: 1,
+                             image_building: 2,
+                             image_built: 3,
+                             container_building: 4,
+                             container_running: 5)
+    end
 
-      @lock.synchronize do
-        @conf ||= YAML.load(File.read(File.join(DIR, name, 'conf.yml')))
+    def get_status
+      if Docker::Image.exist?(@namespace)
+        begin
+          container = Docker::Container.get(@namespace)
+          Models.statuses[:container_running]
+        rescue
+          Models.statuses[:image_built]
+        end
+      else
+        Models.statuses[:no_image]
       end
+    end
+
+    def update_status(status=nil)
+      status = status || get_status
+      msg = { status: status }
+      MessageBus.publish("/admin/ml/models/#{@label}/status", msg)
     end
 
     def self.all
-      Dir.glob(File.join(DIR)).map { |model| MlModel.create(File.basename(model))}
-    end
-
-    def self.create(name, version='latest')
-      MlModel.new(name).tap do |m|
-        m.image = @conf.namespace
-        m.train_cmd = @conf.cmd(version)
-        m.current_run =
-        m.current_data =
-      end
+      Dir.glob(File.join(DIR, "*")).map { |model| Models.new(File.basename(model)) }
     end
   end
 
-  class MlModelController < ::ApplicationController
-
+  class ModelsController < ::ApplicationController
     def index
-      format.json do
-        render_serialized(MlModel.all, MlModelSerializer)
-      end
+      render_serialized(Models.all, ModelsSerializer)
     end
+
+    def build_image
+      label = params[:label]
+      if !Docker::Image.exist?(Models.new(label).namespace)
+        Jobs.enqueue(:build_model_image, label: label)
+      end
+      render json: success_json
+    end
+
     def train
       name = params[:model_name]
-      model = MlModel.create(name)
+      model = Models.create(name)
       container = Docker::Container.create(
         'Image' => model.image,
         'Cmd' => [model.train_cmd],
@@ -51,11 +71,7 @@ module DiscourseMachineLearning
           File.join(Rails.root, 'public', 'plugins', 'discourse-machine-learning', 'data', name) => { '/data' => 'rw' }
         }
       )
-      container.tap(&:start) { |stream, chunk|
-        if stream == :stdout
-          puts "#{chunk}"
-        end
-      }
+      container.tap(&:start).attach { |stream, chunk| puts "#{stream}: #{chunk}" }
       ## get checkpoint from docker container when training complete
     end
 
@@ -72,7 +88,7 @@ module DiscourseMachineLearning
     end
   end
 
-  class MlModelSerializer < ApplicationSerializer
-    attributes :name, :status, :current_run, :current_data
+  class ModelsSerializer < ActiveModel::Serializer
+    attributes :label, :namespace, :status
   end
 end
