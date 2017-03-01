@@ -61,6 +61,15 @@ module DiscourseMachineLearning
       render json: success_json
     end
 
+    def remove_image
+      label = params[:label]
+      model = Models.new(label)
+      image = Docker::Image.get(model.namespace)
+      image.remove(:force => true)
+      model.update_status()
+      render json: success_json
+    end
+
     def train
       name = params[:model_name]
       model = Models.create(name)

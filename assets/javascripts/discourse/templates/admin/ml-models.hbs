@@ -12,25 +12,7 @@
   {{#conditional-loading-spinner condition=loading}}
     {{#each models as |m|}}
       <div class='admin-list-item'>
-        <div class="col value first model-label">
-          {{m.label}}
-        </div>
-        <div class="col value model-image">
-          {{m.namespace}}
-        </div>
-        <div class="col value model-run">
-          {{m.run}}
-        </div>
-        <div class="col value model-data">
-          {{m.data}}
-        </div>
-        <div class="col value model-status">
-          {{m.status}}
-        </div>
-        <div class="col value model-actions">
-          <a {{action "buildModelImage" m}} class="btn btn-small">{{i18n 'ml.admin.models.build'}}</a>
-        </div>
-        <div class="clearfix"></div>
+        {{model-list-item model=m}}
       </div>
     {{else}}
       {{i18n 'search.no_results'}}

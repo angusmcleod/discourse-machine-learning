@@ -29,6 +29,7 @@ after_initialize do
 
   DiscourseMachineLearning::Engine.routes.draw do
     post "build-model-image" => "models#build_image"
+    post "remove-model-image" => "models#remove_image"
     post "train" => "models#train"
     post "eval" => "models#eval"
     post "run" => "models#run"

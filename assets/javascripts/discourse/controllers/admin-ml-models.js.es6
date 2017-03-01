@@ -1,7 +1,5 @@
-import { ajax } from 'discourse/lib/ajax'
-
 export default Ember.Controller.extend({
-  models: [],
+  models: Ember.A(),
 
   subscribeToModelStatus: function() {
     const models = this.get('models');
@@ -11,20 +9,5 @@ export default Ember.Controller.extend({
         model.set('status', data.status);
       })
     })
-  }.observes('models'),
-
-  actions: {
-    buildModelImage(model) {
-      ajax("build-model-image", {
-       type: 'POST',
-       data: {
-         label: model.label,
-       }
-      }).then(function (result, error) {
-       if (error) {
-         popupAjaxError(error);
-       }
-      });
-    }
-  }
+  }.observes('models.[]')
 });
