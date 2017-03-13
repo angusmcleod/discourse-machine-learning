@@ -1,12 +1,12 @@
 import { ajax } from 'discourse/lib/ajax';
-import Model from '../models/model';
+import Dataset from '../models/dataset';
 
 export default Discourse.Route.extend({
   model() {
-    return Model.list();
+    return Dataset.list();
   },
 
   setupController: function(controller, model) {
-    controller.set('models', model);
+    controller.set('datasets', model);
   }
 });

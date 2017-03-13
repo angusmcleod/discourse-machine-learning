@@ -8,9 +8,11 @@ register_asset 'stylesheets/ml.scss', :desktop
 gem 'docker-api', '1.33.2'
 
 after_initialize do
-  load File.expand_path('../jobs/build_model_image.rb', __FILE__)
-  load File.expand_path("../lib/data.rb", __FILE__)
-  load File.expand_path("../lib/models.rb", __FILE__)
+  load File.expand_path('../jobs/build_image.rb', __FILE__)
+  load File.expand_path('../jobs/train_model.rb', __FILE__)
+  load File.expand_path("../lib/dataset.rb", __FILE__)
+  load File.expand_path("../lib/model.rb", __FILE__)
+  load File.expand_path("../lib/run.rb", __FILE__)
 
   require_dependency "application_controller"
   module ::DiscourseMachineLearning
@@ -28,11 +30,16 @@ after_initialize do
   end
 
   DiscourseMachineLearning::Engine.routes.draw do
-    post "build-model-image" => "models#build_image"
-    post "remove-model-image" => "models#remove_image"
-    post "train" => "models#train"
-    post "eval" => "models#eval"
-    post "run" => "models#run"
-    get "models" => "models#index"
+    get  ""                                       => "model#index"
+    get  "models"                                 => "model#index"
+    post "models/build-image"                     => "model#build_image"
+    post "models/remove-image"                    => "model#remove_image"
+    get  "runs"                                   => "run#index"
+    post "runs/train"                             => "run#train"
+    post "runs/eval"                              => "run#eval"
+    delete "runs/:model_label/:label"             => "run#destroy"
+    get  "datasets"                               => "dataset#index"
+    post "datasets/:model_label/:label/:type"     => "dataset#upload"
+    delete "datasets/:model_label/:label"         => "dataset#destroy"
   end
 end

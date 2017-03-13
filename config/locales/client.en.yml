@@ -2,20 +2,49 @@ en:
   js:
     ml:
       admin:
-        title: "ML"
-        models:
+        actions: "Actions"
+        status: "Status"
+        destroy: "Delete"
+        dataset:
+          title: "Datasets"
+          label: "Dataset"
+          train_link: "Train Data"
+          test_link: "Test Data"
+          upload:
+            title: "Upload a dataset for a model"
+            data: "{{dataType}} data"
+            save: "Save data"
+            no_model: "Select a model"
+        model:
           title: "Models"
           label: "Model"
+          type_label: "Type"
+          type:
+            1: "Pre-Trained"
+            2: "Trainable"
           image: "Image"
-          status: "Status"
           build: "Build Image"
           remove: "Remove Image"
-          run: "Run"
+          train:
+            label: "Train"
+            title: "Train model with a dataset"
+            no_dataset: "Select a dataset"
+            start: "Start"
           data: "Data"
-          actions: "Actions"
-          statuses:
+          status:
             1: "No Image"
             2: "Building Image"
             3: "Image Built"
-            4: "Building Container"
-            5: "Container Running"
+            4: "Training"
+            5: "Building Container"
+            6: "Container Running"
+        run:
+          title: "Runs"
+          label: "Run"
+          status:
+            0: "Undetermined"
+            1: "Initializing"
+            2: "Training"
+            3: "Trained"
+            4: "Evaluating"
+        title: "ML"

@@ -1,32 +1,25 @@
 @import "common/admin/admin_base";
 @import "common/components/navs.css.scss";
 
-.ml-models {
+.ml {
   @extend .staff-actions;
   width: 100%;
-
-  .model-label {
-    width: 10%;
+  .heading-container, .table-item {
+    display: flex;
   }
-
-  .model-image {
+  .first {
+    margin-left: 10px;
+  }
+  .label {
+    width: 10%;
+    flex: 0 1 auto;
+  }
+  .large-label {
     width: 20%;
+    flex: 0 1 auto;
   }
-
-  .model-run {
-    width: 15%;
-  }
-
-  .model-data {
-    width: 15%;
-  }
-
-  .model-status {
-    width: 10%;
-  }
-
-  .model-actions {
-    width: 25%;
+  .flexible-label {
+    flex: 1 1 auto;
   }
 }
 

@@ -3,6 +3,8 @@ export default {
   map() {
     this.route('adminMl', { path: '/ml', resetNamespace: true }, function() {
       this.route('models', { path: '/models' });
+      this.route('runs', { path: '/runs' });
+      this.route('datasets', { path: '/datasets' });
     });
   }
 };

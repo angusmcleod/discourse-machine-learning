@@ -1,0 +1,6 @@
+{{#d-modal-body class="model-train" title=title}}
+  {{combo-box valueAttribute="value" content=datasetLabels value=datasetIndex none="ml.admin.model.train.no_dataset"}}
+  {{#if datasetIndex}}
+    {{d-button action="startTraining" label="ml.admin.model.train.start" class="btn-primary pull-right"}}
+  {{/if}}
+{{/d-modal-body}}

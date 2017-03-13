@@ -1,5 +1,5 @@
 export default Discourse.Route.extend({
-  redirect: function() {
+  redirect() {
     this.transitionTo('adminMl.models');
   }
 });

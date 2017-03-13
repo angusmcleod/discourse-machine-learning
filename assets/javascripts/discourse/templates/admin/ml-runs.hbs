@@ -1,18 +1,17 @@
 <div class='table ml'>
   <div class="heading-container">
-    <div class="col heading first label">{{i18n 'ml.admin.model.label'}}</div>
-    <div class="col heading label">{{i18n 'ml.admin.model.type_label'}}</div>
-    <div class="col heading large-label">{{i18n 'ml.admin.model.image'}}</div>
-    <div class="col heading large-label">{{i18n 'ml.admin.run.label'}}</div>
+    <div class="col heading first label">{{i18n 'ml.admin.run.label'}}</div>
+    <div class="col heading label">{{i18n 'ml.admin.model.label'}}</div>
+    <div class="col heading large-label">{{i18n 'ml.admin.dataset.label'}}</div>
     <div class="col heading label">{{i18n 'ml.admin.status'}}</div>
     <div class="col heading flexible-label">{{i18n 'ml.admin.actions'}}</div>
     <div class="clearfix"></div>
   </div>
 
   {{#conditional-loading-spinner condition=loading}}
-    {{#each models as |m|}}
+    {{#each runs as |r|}}
       <div class='admin-list-item'>
-        {{ml-model model=m}}
+        {{ml-run run=r}}
       </div>
     {{else}}
       {{i18n 'search.no_results'}}

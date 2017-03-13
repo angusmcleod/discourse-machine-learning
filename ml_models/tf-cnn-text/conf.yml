@@ -1,4 +1,6 @@
 ---
 namespace: 'tensorflow/tensorflow:latest'
+type: 2
 path: 'hub'
-cmd: "python ./train.py --train_data_path='/data/%{version}/train.txt'"
+mount_dir: '/notebooks'
+train_cmd: "python /notebooks/train.py --train_data_path='/notebooks/data/train.txt'"

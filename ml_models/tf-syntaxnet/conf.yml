@@ -1,3 +1,4 @@
 ---
 namespace: 'syntaxnet:latest'
-path: '/plugins/discourse-machine-learning/models/tf-syntaxnet'
+type: 1
+eval_cmd:

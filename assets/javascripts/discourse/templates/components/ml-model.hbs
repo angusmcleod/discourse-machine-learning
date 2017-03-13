@@ -1,0 +1,24 @@
+<div class="col value first label">
+  {{model.label}}
+</div>
+<div class="col value label">
+  {{typeLabel}}
+</div>
+<div class="col value large-label">
+  {{model.namespace}}
+</div>
+<div class="col value large-label">
+  {{model.run_label}}
+</div>
+<div class="col value label">
+  {{statusLabel}}
+</div>
+<div class="col value flexible-label">
+  {{#if built}}
+    {{d-button action="removeImage" actionParam=model class="btn btn-small" label="ml.admin.model.remove"}}
+    {{d-button action="openTrainModel" actionParam=model class="btn btn-small" label="ml.admin.model.train.label"}}
+  {{else}}
+    {{d-button action="buildImage" actionParam=model class="btn btn-small" label="ml.admin.model.build" disabled=building}}
+  {{/if}}
+</div>
+<div class="clearfix"></div>

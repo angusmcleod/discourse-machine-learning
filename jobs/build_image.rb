@@ -6,12 +6,12 @@ module Jobs
       Excon.defaults[:write_timeout] = 1000
       Excon.defaults[:read_timeout] = 1000
 
-      label = args[:label]
-      model = DiscourseMachineLearning::Models.new(label)
+      model_label = args[:model_label]
+      model = DiscourseMachineLearning::Model.new(model_label)
       namespace = model.conf["namespace"]
       path = model.conf["path"]
 
-      model.update_status(DiscourseMachineLearning::Models.statuses[:image_building])
+      model.update_status(DiscourseMachineLearning::Model.statuses[:building])
 
       if path == 'hub'
         Docker::Image.create('fromImage' => namespace) do |v|

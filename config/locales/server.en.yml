@@ -1,0 +1,6 @@
+en:
+  ml:
+    model:
+      no_image: "The image for {{model_label}} could not be found"
+    run:
+      initializing: "Initializing"
