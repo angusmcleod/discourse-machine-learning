@@ -13,6 +13,10 @@ export default Ember.Component.extend({
       run.destroy();
     },
 
+    test(run) {
+      run.test();
+    },
+
     goToDataset(run) {
       getOwner(this).lookup('router:main').transitionTo('adminMl.datasets')
       .then(function(newRoute) {

@@ -8,7 +8,7 @@ export default Ember.Controller.extend({
     return this.get('activeLabel') ?
            this.get('runs').filter((r) => r.label === this.get('activeLabel')):
            this.get('runs');
-  }.property('activeLabel'),
+  }.property('runs', 'activeLabel'),
 
   subscribeToRunStatus: function() {
     let self = this;

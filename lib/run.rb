@@ -118,11 +118,11 @@ module DiscourseMachineLearning
       render json: success_json
     end
 
-    def test
+    def eval
       label = params[:label]
-      model_label = params[:model_label]
+      test_run = params[:test_run]
       if Docker::Image.exist?(DiscourseMachineLearning::Model.new(model_label).namespace)
-        Jobs.enqueue(:test_run, label: label, model_label: model_label)
+        Jobs.enqueue(:eval, label: label, test_run: test_run)
       else
         render json: failed_json.merge(message: I18n.t("ml.model.no_image", model_label: model_label))
       end

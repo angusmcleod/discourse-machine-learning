@@ -41,6 +41,7 @@ en:
         run:
           title: "Runs"
           label: "Run"
+          test: "Test"
           status:
             0: "Undetermined"
             1: "Initializing"

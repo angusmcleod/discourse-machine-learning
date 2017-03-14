@@ -9,7 +9,7 @@ export default Ember.Controller.extend({
     return this.get('activeLabel') ?
            this.get('datasets').filter((d) => d.label === this.get('activeLabel')):
            this.get('datasets');
-  }.property('activeLabel'),
+  }.property('datasets', 'activeLabel'),
 
   subscribeToDatasets: function() {
     let self = this;
