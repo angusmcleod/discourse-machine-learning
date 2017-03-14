@@ -8,5 +8,9 @@ export default Discourse.Route.extend({
 
   setupController: function(controller, model) {
     controller.set('runs', model);
+  },
+
+  deactivate() {
+    this.controllerFor('adminMl.runs').set('activeLabel', null);
   }
 });

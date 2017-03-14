@@ -2,6 +2,13 @@ import Run from '../models/run';
 
 export default Ember.Controller.extend({
   runs: Ember.A(),
+  activeLabel: null,
+
+  visibleRuns: function() {
+    return this.get('activeLabel') ?
+           this.get('runs').filter((r) => r.label === this.get('activeLabel')):
+           this.get('runs');
+  }.property('activeLabel'),
 
   subscribeToRunStatus: function() {
     let self = this;
@@ -36,5 +43,11 @@ export default Ember.Controller.extend({
         window.location.reload();
       }
     })
-  }.on('init')
+  }.on('init'),
+
+  actions: {
+    clearFilter() {
+      this.set('activeLabel', null)
+    }
+  }
 });

@@ -5,7 +5,7 @@
   {{run.model_label}}
 </div>
 <div class="col value large-label">
-  {{run.dataset_label}}
+  <a {{action "goToDataset" run}}>{{run.dataset_label}}</a>
 </div>
 <div class="col value label">
   {{status}}

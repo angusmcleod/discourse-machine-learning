@@ -1,4 +1,5 @@
 import { ajax } from 'discourse/lib/ajax';
+import { getOwner } from 'discourse-common/lib/get-owner';
 
 export default Ember.Component.extend({
   tagName: 'div',
@@ -10,6 +11,13 @@ export default Ember.Component.extend({
   actions: {
     destroy(run) {
       run.destroy();
+    },
+
+    goToDataset(run) {
+      getOwner(this).lookup('router:main').transitionTo('adminMl.datasets')
+      .then(function(newRoute) {
+        newRoute.controller.set('activeLabel', run.dataset_label);
+      });
     }
   }
 });

@@ -8,7 +8,7 @@
   {{model.namespace}}
 </div>
 <div class="col value large-label">
-  {{model.run_label}}
+  <a {{action "goToRun" model}}>{{model.run_label}}</a>
 </div>
 <div class="col value label">
   {{statusLabel}}

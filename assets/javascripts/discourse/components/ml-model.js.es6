@@ -1,5 +1,6 @@
 import { ajax } from 'discourse/lib/ajax';
 import showModal from 'discourse/lib/show-modal';
+import { getOwner } from 'discourse-common/lib/get-owner';
 
 export default Ember.Component.extend({
   tagName: 'div',
@@ -16,6 +17,10 @@ export default Ember.Component.extend({
     return I18n.t(`ml.admin.model.status.${this.get('model.status')}`);
   }.property('model.status'),
 
+  runLink: function() {
+    return model.run_label
+  },
+
   actions: {
     buildImage(model) {
       model.buildImage();
@@ -27,6 +32,13 @@ export default Ember.Component.extend({
 
     openTrainModel(model) {
       showModal('model-train', { model: model });
+    },
+
+    goToRun(model) {
+      getOwner(this).lookup('router:main').transitionTo('adminMl.runs')
+      .then(function(newRoute) {
+        newRoute.controller.set('activeLabel', model.run_label);
+      });
     }
   }
 });

@@ -3,6 +3,13 @@ import Dataset from '../models/dataset';
 
 export default Ember.Controller.extend({
   datasets: Ember.A(),
+  activeLabel: null,
+
+  visibleDatasets: function() {
+    return this.get('activeLabel') ?
+           this.get('datasets').filter((d) => d.label === this.get('activeLabel')):
+           this.get('datasets');
+  }.property('activeLabel'),
 
   subscribeToDatasets: function() {
     let self = this;
@@ -18,6 +25,10 @@ export default Ember.Controller.extend({
   actions: {
     openDatasetUpload() {
       showModal('dataset-upload');
+    },
+
+    clearFilter() {
+      this.set('activeLabel', null)
     }
-  }
+  },
 });
