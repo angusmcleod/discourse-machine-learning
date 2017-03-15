@@ -37,7 +37,8 @@ module DiscourseMachineLearning
                              initializing: 1,
                              training: 2,
                              trained: 3,
-                             evaluating: 4)
+                             testing: 4,
+                             tested: 5)
     end
 
     def self.set_status(label, status)
@@ -99,10 +100,15 @@ module DiscourseMachineLearning
       DiscourseMachineLearning::Model.set_run(model_label, run.label)
     end
 
-    def on_test_complete(label, output)
-      accuracy = output('ACCURACY').last
-      Run.set_accuracy(label, accuracy)
-      MessageBus.publish("/admin/ml/runs", { label: label, accuracy: accuracy })
+    def on_test_start
+      Run.set_status(@label, Run.statuses[:testing])
+      MessageBus.publish("/admin/ml/runs", { label: label, status: Run.statuses[:testing]})
+    end
+
+    def on_test_complete(output)
+      accuracy = output.partition('ACCURACY:').last
+      Run.set_accuracy(@label, accuracy)
+      MessageBus.publish("/admin/ml/runs", { label: label, accuracy: accuracy, status: Run.statuses[:tested] })
     end
 
     def self.get_checkpoint_from_file(label, model_label)

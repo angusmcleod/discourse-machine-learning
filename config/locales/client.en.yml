@@ -53,5 +53,6 @@ en:
             1: "Initializing"
             2: "Training"
             3: "Trained"
-            4: "Evaluating"
+            4: "Testing"
+            5: "Tested"
         title: "ML"

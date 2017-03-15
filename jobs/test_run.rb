@@ -11,6 +11,8 @@ module Jobs
       run = DiscourseMachineLearning::Run.new(label, model_label)
       model = DiscourseMachineLearning::Model.new(model_label)
 
+      run.on_test_start()
+
       checkpoint_dir = File.join(model.mount_dir, 'runs', label, '/checkpoints')
       test_cmd = model.test_cmd % { :checkpoint_dir => checkpoint_dir }
 
@@ -38,7 +40,7 @@ module Jobs
       container.exec(["bash", "-c", test_cmd]) { |stream, chunk|
         puts "#{stream}: #{chunk}"
         if chunk.include? "ACCURACY"
-          DiscourseMachineLearning::Run.on_test_complete(label, chunk)
+          run.on_test_complete(chunk)
         end
       }
     end

@@ -20,6 +20,11 @@ export default Ember.Controller.extend({
         return
       }
 
+      if (data.accuracy) {
+        let run = self.get('runs').findBy('label', data.label)
+        run.set('accuracy', data.accuracy);
+      }
+
       if (data.status) {
         let run = self.get('runs').findBy('label', data.label)
         run.set('status', data.status);
@@ -36,12 +41,6 @@ export default Ember.Controller.extend({
         self.set('runs', self.get('runs').filter((run) =>
           run.label !== data.label
         ));
-        return
-      }
-
-      if (data.accuracy) {
-        let run = self.get('runs').findBy('label', data.label)
-        run.set('accuracy', data.accuracy);
         return
       }
 
