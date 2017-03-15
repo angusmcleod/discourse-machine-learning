@@ -20,6 +20,16 @@ const Model = Discourse.Model.extend({
     });
   },
 
+  setRun(runLabel) {
+    ajax("models/set-run", { type: 'POST', data: {
+       model_label: this.get('label'),
+       run_label: runLabel
+     }
+    }).then(function (result, error) {
+     if (error) { popupAjaxError(error); }
+    });
+  },
+
   train(datasetLabel) {
     ajax("runs/train", { type: 'POST', data: {
        model_label: this.get('label'),

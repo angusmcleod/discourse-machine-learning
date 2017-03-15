@@ -1,7 +1,8 @@
 ---
 namespace: 'tensorflow/tensorflow:latest'
 type: 2
-path: 'hub'
+source: 'hub'
 mount_dir: '/notebooks'
 train_cmd: "python /notebooks/train.py --train_data_path='/notebooks/data/train.txt'"
 test_cmd: "python ./eval.py --checkpoint_dir=%{checkpoint_dir} --test_data_path='/notebooks/data/test.txt'"
+eval_cmd: "python ./eval.py --checkpoint_dir=%{checkpoint_dir} --eval=%{input}"

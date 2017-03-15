@@ -30,6 +30,11 @@ en:
             title: "Train model with a dataset"
             no_dataset: "Select a dataset"
             start: "Start"
+          run:
+            label: "Select Run"
+            title: "Select a run to use with this model"
+            no_run: "Select a run"
+            done: "Done"
           data: "Data"
           status:
             1: "No Image"
@@ -42,6 +47,7 @@ en:
           title: "Runs"
           label: "Run"
           test: "Test"
+          accuracy: "Accuracy"
           status:
             0: "Undetermined"
             1: "Initializing"

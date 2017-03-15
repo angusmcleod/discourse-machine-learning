@@ -3,7 +3,7 @@ module DiscourseMachineLearning
     include ActiveModel::SerializerSupport
 
     attr_reader :label, :model_label, :dataset_label
-    attr_accessor :status
+    attr_accessor :status, :accuracy
 
     MODEL_DIR = "#{Rails.root}/plugins/discourse-machine-learning/ml_models/"
 
@@ -13,6 +13,7 @@ module DiscourseMachineLearning
       @dataset_label = Run.get_dataset(label)
       @status = Run.get_status(label) || Run.statuses[:undetermined]
       @checkpoint = Run.get_checkpoint(label)
+      @accuracy = Run.get_accuracy(label)
     end
 
     def self.all
@@ -63,6 +64,14 @@ module DiscourseMachineLearning
       PluginStore.get("discourse-machine-learning", "#{label}_checkpoint")
     end
 
+    def self.set_accuracy(label, accuracy)
+      PluginStore.set("discourse-machine-learning", "#{label}_accuracy", accuracy)
+    end
+
+    def self.get_accuracy(label)
+      PluginStore.get("discourse-machine-learning", "#{label}_accuracy")
+    end
+
     def self.on_init(model_label, dataset_label)
       sleep 2
       msg = {
@@ -78,7 +87,7 @@ module DiscourseMachineLearning
     def self.on_start(run_label, model_label, dataset_label)
       Run.set_status(run_label, Run.statuses[:training])
       Run.set_dataset(run_label, dataset_label)
-      Model.set_run_label(model_label, run_label)
+      Model.new(model_label).update_run_label(run_label)
       MessageBus.publish("/admin/ml/runs", { new_run: true })
     end
 
@@ -88,6 +97,12 @@ module DiscourseMachineLearning
       MessageBus.publish("/admin/ml/runs", { label: label, status: Run.statuses[:trained] })
       Run.set_checkpoint(run.label, get_checkpoint_from_file(run.label, model_label))
       DiscourseMachineLearning::Model.set_run(model_label, run.label)
+    end
+
+    def on_test_complete(label, output)
+      accuracy = output('ACCURACY').last
+      Run.set_accuracy(label, accuracy)
+      MessageBus.publish("/admin/ml/runs", { label: label, accuracy: accuracy })
     end
 
     def self.get_checkpoint_from_file(label, model_label)
@@ -111,30 +126,34 @@ module DiscourseMachineLearning
       dataset_label = params[:dataset_label]
       Run.on_init(model_label, dataset_label)
       if Docker::Image.exist?(DiscourseMachineLearning::Model.new(model_label).namespace)
-        Jobs.enqueue(:train_model, model_label: model_label, dataset_label: dataset_label)
+        Jobs.enqueue(:train_run, model_label: model_label, dataset_label: dataset_label)
       else
         render json: failed_json.merge(message: I18n.t("ml.model.no_image", model_label: model_label))
       end
       render json: success_json
     end
 
-    def eval
+    def test
       label = params[:label]
-      test_run = params[:test_run]
+      model_label = params[:model_label]
       if Docker::Image.exist?(DiscourseMachineLearning::Model.new(model_label).namespace)
-        Jobs.enqueue(:eval, label: label, test_run: test_run)
+        Jobs.enqueue(:test_run, label: label, model_label: model_label)
       else
         render json: failed_json.merge(message: I18n.t("ml.model.no_image", model_label: model_label))
       end
       render json: success_json
-      ## get checkpoint
-      ## run eval with checkpoint in docker container
-      ## get result
     end
 
     def destroy
-      if run = Run.new(params[:label], params[:model_label])
+      label = params[:label]
+      model_label = params[:model_label]
+      if run = Run.new(label, model_label)
         run.remove
+        model = DiscourseMachineLearning::Model.new(model_label)
+        if model.run_label == label
+          model.update_run_label(label)
+        end
+
         MessageBus.publish("/admin/ml/runs", {
           action: 'remove',
           label: params[:label]
@@ -147,6 +166,6 @@ module DiscourseMachineLearning
   end
 
   class RunSerializer < ::ApplicationSerializer
-    attributes :label, :model_label, :dataset_label, :status
+    attributes :label, :model_label, :dataset_label, :accuracy, :status
   end
 end

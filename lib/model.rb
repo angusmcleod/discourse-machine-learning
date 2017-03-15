@@ -5,13 +5,14 @@ module DiscourseMachineLearning
     include ActiveModel::SerializerSupport
 
     attr_reader :label
-    attr_accessor :conf, :type, :namespace, :status, :run_label, :train_cmd, :mount_dir
+    attr_accessor :conf, :type, :namespace, :status, :run_label, :train_cmd, :test_cmd, :mount_dir
 
     MODEL_DIR = "#{Rails.root}/plugins/discourse-machine-learning/ml_models/"
 
     def initialize(label)
       @label = label
       @conf = YAML.load(File.read(File.join(MODEL_DIR, @label, 'conf.yml')))
+      @source = @conf["source"]
       @type = @conf["type"]
       @namespace = @conf["namespace"]
       @train_cmd = @conf["train_cmd"]
@@ -42,16 +43,29 @@ module DiscourseMachineLearning
         label: @label,
         status: status
       }
-      MessageBus.publish("/admin/ml/model", msg)
+      MessageBus.publish("/admin/ml/models", msg)
+    end
+
+    def update_run_label(run_label)
+      Model.set_run_label(@label, run_label)
+      msg = {
+        label: @label,
+        run_label: run_label
+      }
+      MessageBus.publish("/admin/ml/models", msg)
     end
 
     def self.set_run_label(label, run_label)
       PluginStore.set("discourse-machine-learning", "#{label}_run", run_label)
-      MessageBus.publish("/admin/ml/model", { label: label, run_label: run_label })
     end
 
     def self.get_run_label(label)
       PluginStore.get("discourse-machine-learning", "#{label}_run")
+    end
+
+    def on_eval_complete(label, output)
+      output = output('OUTPUT').last
+      print (output)
     end
 
     def self.all
@@ -67,7 +81,7 @@ module DiscourseMachineLearning
     def build_image
       model_label = params[:model_label]
       if !Docker::Image.exist?(Model.new(model_label).namespace)
-        Jobs.enqueue(:build_model_image, model_label: model_label)
+        Jobs.enqueue(:build_image, model_label: model_label)
       end
       render json: success_json
     end
@@ -78,6 +92,24 @@ module DiscourseMachineLearning
       image = Docker::Image.get(model.namespace)
       image.remove(:force => true)
       model.update_status()
+      render json: success_json
+    end
+
+    def set_run
+      model_label = params[:model_label]
+      run_label = params[:run_label]
+      Model.new(model_label).update_run_label(run_label)
+      render json: success_json
+    end
+
+    def eval
+      label = params[:label]
+      input = params[:input]
+      if Docker::Image.exist?(DiscourseMachineLearning::Model.new(model_label).namespace)
+        Jobs.enqueue(:eval_model, label: label, input: input)
+      else
+        render json: failed_json.merge(message: I18n.t("ml.model.no_image", model_label: model_label))
+      end
       render json: success_json
     end
   end

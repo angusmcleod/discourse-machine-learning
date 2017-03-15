@@ -9,7 +9,9 @@ gem 'docker-api', '1.33.2'
 
 after_initialize do
   load File.expand_path('../jobs/build_image.rb', __FILE__)
-  load File.expand_path('../jobs/train_model.rb', __FILE__)
+  load File.expand_path('../jobs/eval_model.rb', __FILE__)
+  load File.expand_path('../jobs/train_run.rb', __FILE__)
+  load File.expand_path('../jobs/test_run.rb', __FILE__)
   load File.expand_path("../lib/dataset.rb", __FILE__)
   load File.expand_path("../lib/model.rb", __FILE__)
   load File.expand_path("../lib/run.rb", __FILE__)
@@ -30,16 +32,18 @@ after_initialize do
   end
 
   DiscourseMachineLearning::Engine.routes.draw do
-    get  ""                                       => "model#index"
-    get  "models"                                 => "model#index"
-    post "models/build-image"                     => "model#build_image"
-    post "models/remove-image"                    => "model#remove_image"
-    get  "runs"                                   => "run#index"
-    post "runs/train"                             => "run#train"
-    post "runs/eval"                              => "run#eval"
+    get    ""                                     => "model#index"
+    get    "models"                               => "model#index"
+    post   "models/build-image"                   => "model#build_image"
+    post   "models/remove-image"                  => "model#remove_image"
+    post   "models/set-run"                       => "model#set_run"
+    post   "models/eval"                          => "model#eval"
+    get    "runs"                                 => "run#index"
+    post   "runs/train"                           => "run#train"
+    post   "runs/test"                            => "run#test"
     delete "runs/:model_label/:label"             => "run#destroy"
-    get  "datasets"                               => "dataset#index"
-    post "datasets/:model_label/:label/:type"     => "dataset#upload"
+    get    "datasets"                             => "dataset#index"
+    post   "datasets/:model_label/:label/:type"   => "dataset#upload"
     delete "datasets/:model_label/:label"         => "dataset#destroy"
   end
 end

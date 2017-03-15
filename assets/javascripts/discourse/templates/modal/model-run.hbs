@@ -1,0 +1,6 @@
+{{#d-modal-body class="model-run" title=title}}
+  {{combo-box valueAttribute="value" content=runLabels value=runIndex none="ml.admin.model.run.no_run"}}
+  {{#if runIndex}}
+    {{d-button action="selectRun" label="ml.admin.model.run.done" class="btn-primary pull-right"}}
+  {{/if}}
+{{/d-modal-body}}

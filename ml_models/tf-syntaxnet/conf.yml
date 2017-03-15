@@ -1,4 +1,6 @@
 ---
 namespace: 'syntaxnet:latest'
 type: 1
-eval_cmd:
+source: 'local'
+mount_dir: '/root'
+eval_cmd: "echo %{param_1} | syntaxnet/parse.sh"

@@ -39,6 +39,12 @@ export default Ember.Controller.extend({
         return
       }
 
+      if (data.accuracy) {
+        let run = self.get('runs').findBy('label', data.label)
+        run.set('accuracy', data.accuracy);
+        return
+      }
+
       if (data.new_run) {
         window.location.reload();
       }

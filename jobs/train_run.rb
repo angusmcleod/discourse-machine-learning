@@ -1,5 +1,5 @@
 module Jobs
-  class TrainModel < Jobs::Base
+  class TrainRun < Jobs::Base
     sidekiq_options timeout: 1000
 
     def execute(args)

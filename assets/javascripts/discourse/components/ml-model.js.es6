@@ -34,6 +34,10 @@ export default Ember.Component.extend({
       showModal('model-train', { model: model });
     },
 
+    openSelectRun(model) {
+      showModal('model-run', { model: model });
+    },
+
     goToRun(model) {
       getOwner(this).lookup('router:main').transitionTo('adminMl.runs')
       .then(function(newRoute) {

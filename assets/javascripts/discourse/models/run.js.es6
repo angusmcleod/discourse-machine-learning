@@ -7,9 +7,9 @@ const Run = Discourse.Model.extend({
   },
 
   test() {
-    ajax("runs/eval", { type: 'POST', data: {
+    ajax("runs/test", { type: 'POST', data: {
        label: this.get('label'),
-       test_run: true
+       model_label: this.get('model_label')
      }
     }).then(function (result, error) {
      if (error) { popupAjaxError(error); }

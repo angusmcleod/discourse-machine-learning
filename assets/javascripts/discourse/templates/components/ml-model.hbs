@@ -17,6 +17,7 @@
   {{#if built}}
     {{d-button action="removeImage" actionParam=model class="btn btn-small" label="ml.admin.model.remove"}}
     {{d-button action="openTrainModel" actionParam=model class="btn btn-small" label="ml.admin.model.train.label"}}
+    {{d-button action="openSelectRun" actionParam=model class="btn btn-small" label="ml.admin.model.run.label"}}
   {{else}}
     {{d-button action="buildImage" actionParam=model class="btn btn-small" label="ml.admin.model.build" disabled=building}}
   {{/if}}
