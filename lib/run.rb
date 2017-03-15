@@ -107,6 +107,7 @@ module DiscourseMachineLearning
 
     def on_test_complete(output)
       accuracy = output.partition('ACCURACY:').last
+      Run.set_status(@label, Run.statuses[:tested])
       Run.set_accuracy(@label, accuracy)
       MessageBus.publish("/admin/ml/runs", { label: label, accuracy: accuracy, status: Run.statuses[:tested] })
     end
