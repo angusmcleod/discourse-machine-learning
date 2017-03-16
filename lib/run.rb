@@ -30,6 +30,14 @@ module DiscourseMachineLearning
 
     def remove
       FileUtils.rm_rf("#{MODEL_DIR}/#{@model_label}/runs/#{@label}")
+      after_remove_hook
+    end
+
+    def after_remove_hook
+      PluginStore.remove("discourse-machine-learning", "#{@label}_status")
+      PluginStore.remove("discourse-machine-learning", "#{@label}_dataset")
+      PluginStore.remove("discourse-machine-learning", "#{@label}_checkpoint")
+      PluginStore.remove("discourse-machine-learning", "#{@label}_accuracy")
     end
 
     def self.statuses
