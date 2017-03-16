@@ -1,0 +1,8 @@
+plugins:
+  enable_ml_data_backups:
+    default: false
+    shadowed_by_global: true
+  s3_ml_data_bucket:
+    default: ''
+    regex: '^[a-z0-9\-\/]+$' # can't use '.' when using HTTPS
+    shadowed_by_global: true

@@ -4,20 +4,24 @@
 <div class="col value label">
   {{typeLabel}}
 </div>
-<div class="col value large-label">
+<div class="col value medium-label">
   {{model.namespace}}
 </div>
-<div class="col value large-label">
+<div class="col value label">
   <a {{action "goToRun" model}}>{{model.run_label}}</a>
+</div>
+<div class="col value label">
+  {{model.input}}
 </div>
 <div class="col value label">
   {{statusLabel}}
 </div>
-<div class="col value flexible-label">
+<div class="col value large-label">
   {{#if built}}
     {{d-button action="removeImage" actionParam=model class="btn btn-small" label="ml.admin.model.remove"}}
     {{d-button action="openTrainModel" actionParam=model class="btn btn-small" label="ml.admin.model.train.label"}}
     {{d-button action="openSelectRun" actionParam=model class="btn btn-small" label="ml.admin.model.run.label"}}
+    {{d-button action="openSelectInput" actionParam=model class="btn btn-small" label="ml.admin.model.input.label"}}
   {{else}}
     {{d-button action="buildImage" actionParam=model class="btn btn-small" label="ml.admin.model.build" disabled=building}}
   {{/if}}

@@ -35,6 +35,12 @@ en:
             title: "Select a run to use with this model"
             no_run: "Select a run"
             done: "Done"
+          input:
+            header: "Input"
+            label: "Select Input"
+            title: "Select an input for the model"
+            no_input: "Select an input"
+            done: "Done"
           data: "Data"
           status:
             1: "No Image"

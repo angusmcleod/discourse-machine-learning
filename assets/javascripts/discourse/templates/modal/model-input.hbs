@@ -1,0 +1,6 @@
+{{#d-modal-body class="model-input" title=title}}
+  {{combo-box valueAttribute="value" content=inputLabels value=inputIndex none="ml.admin.model.input.no_input"}}
+  {{#if inputIndex}}
+    {{d-button action="selectInput" label="ml.admin.model.input.select" class="btn-primary pull-right"}}
+  {{/if}}
+{{/d-modal-body}}

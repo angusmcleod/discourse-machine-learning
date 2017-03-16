@@ -13,6 +13,7 @@ after_initialize do
   load File.expand_path('../jobs/train_run.rb', __FILE__)
   load File.expand_path('../jobs/test_run.rb', __FILE__)
   load File.expand_path("../lib/dataset.rb", __FILE__)
+  load File.expand_path("../lib/input.rb", __FILE__)
   load File.expand_path("../lib/model.rb", __FILE__)
   load File.expand_path("../lib/run.rb", __FILE__)
 
@@ -32,11 +33,12 @@ after_initialize do
   end
 
   DiscourseMachineLearning::Engine.routes.draw do
-    get    ""                                     => "model#index"
+    get    "inputs"                               => "input#index"
     get    "models"                               => "model#index"
     post   "models/build-image"                   => "model#build_image"
     post   "models/remove-image"                  => "model#remove_image"
     post   "models/set-run"                       => "model#set_run"
+    post   "models/set-input"                     => "model#set_input"
     post   "models/eval"                          => "model#eval"
     get    "runs"                                 => "run#index"
     post   "runs/train"                           => "run#train"

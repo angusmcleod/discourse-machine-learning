@@ -4,7 +4,7 @@
 <div class="col value label">
   {{run.model_label}}
 </div>
-<div class="col value large-label">
+<div class="col value medium-label">
   <a {{action "goToDataset" run}}>{{run.dataset_label}}</a>
 </div>
 <div class="col value label">
@@ -13,7 +13,7 @@
 <div class="col value label">
   {{status}}
 </div>
-<div class="col value flexible-label">
+<div class="col value large-label">
   {{d-button action="destroy" actionParam=run class="btn btn-small" label="ml.admin.destroy"}}
   {{d-button action="test" actionParam=run class="btn btn-small" label="ml.admin.run.test"}}
 </div>

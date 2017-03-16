@@ -4,15 +4,15 @@
 <div class="col value label">
   {{dataset.model_label}}
 </div>
-<div class="col value large-label">
+<div class="col value medium-label">
   <a href={{dataset.train_link}} target="_blank">{{trainFileName}}</a>
   ({{human-size dataset.train_size}})
 </div>
-<div class="col value large-label">
+<div class="col value medium-label">
   <a href={{dataset.test_link}} target="_blank">{{testFileName}}</a>
   ({{human-size dataset.test_size}})
 </div>
-<div class="col value flexible-label">
+<div class="col value large-label">
   {{d-button action="destroy" actionParam=dataset class="btn btn-small" label="ml.admin.destroy"}}
 </div>
 <div class="clearfix"></div>

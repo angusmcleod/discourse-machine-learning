@@ -18,7 +18,8 @@ module DiscourseMachineLearning
       @train_cmd = @conf["train_cmd"]
       @test_cmd = @conf["test_cmd"]
       @mount_dir = @conf["mount_dir"]
-      @run_label = Model.get_run_label(label)
+      @run_label = Model.get_run(label)
+      @input = Model.get_input(label)
       @status = get_static_status
       ## how to store checkpoints? Need new table in db
     end
@@ -38,7 +39,7 @@ module DiscourseMachineLearning
     end
 
     def update_status(status=nil)
-      status = status || get_status
+      status = status || get_static_status
       msg = {
         label: @label,
         status: status
@@ -46,8 +47,8 @@ module DiscourseMachineLearning
       MessageBus.publish("/admin/ml/models", msg)
     end
 
-    def update_run_label(run_label)
-      Model.set_run_label(@label, run_label)
+    def update_run(run_label)
+      Model.set_run(@label, run_label)
       msg = {
         label: @label,
         run_label: run_label
@@ -55,11 +56,28 @@ module DiscourseMachineLearning
       MessageBus.publish("/admin/ml/models", msg)
     end
 
-    def self.set_run_label(label, run_label)
+    def update_input(input_label)
+      Model.set_input(@label, input_label)
+      msg = {
+        label: @label,
+        input_label: input_label
+      }
+      MessageBus.publish("/admin/ml/models", msg)
+    end
+
+    def self.set_input(label, input_label)
+      PluginStore.set("discourse-machine-learning", "#{label}_input", input_label)
+    end
+
+    def self.get_input(label)
+      PluginStore.get("discourse-machine-learning", "#{label}_input")
+    end
+
+    def self.set_run(label, run_label)
       PluginStore.set("discourse-machine-learning", "#{label}_run", run_label)
     end
 
-    def self.get_run_label(label)
+    def self.get_run(label)
       PluginStore.get("discourse-machine-learning", "#{label}_run")
     end
 
@@ -90,7 +108,11 @@ module DiscourseMachineLearning
       model_label = params[:model_label]
       model = Model.new(model_label)
       image = Docker::Image.get(model.namespace)
-      image.remove(:force => true)
+      begin
+        image.remove(:force => true)
+      rescue Exception => e
+        return render json: failed_json.merge(message: e), status: 400
+      end
       model.update_status()
       render json: success_json
     end
@@ -98,7 +120,14 @@ module DiscourseMachineLearning
     def set_run
       model_label = params[:model_label]
       run_label = params[:run_label]
-      Model.new(model_label).update_run_label(run_label)
+      Model.new(model_label).update_run(run_label)
+      render json: success_json
+    end
+
+    def set_input
+      model_label = params[:model_label]
+      input_label = params[:input_label]
+      Model.new(model_label).update_input(input_label)
       render json: success_json
     end
 
@@ -108,7 +137,7 @@ module DiscourseMachineLearning
       if Docker::Image.exist?(DiscourseMachineLearning::Model.new(model_label).namespace)
         Jobs.enqueue(:eval_model, label: label, input: input)
       else
-        render json: failed_json.merge(message: I18n.t("ml.model.no_image", model_label: model_label))
+        return render json: failed_json.merge(message: I18n.t("ml.model.no_image", model_label: model_label))
       end
       render json: success_json
     end

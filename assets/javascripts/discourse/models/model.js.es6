@@ -15,7 +15,8 @@ const Model = Discourse.Model.extend({
     ajax("models/remove-image", { type: 'POST', data: {
        model_label: this.get('label')
      }
-    }).then(function (result, error) {
+   }).then(function (result, error) {
+      console.log(result, error)
      if (error) { popupAjaxError(error); }
     });
   },
@@ -24,6 +25,16 @@ const Model = Discourse.Model.extend({
     ajax("models/set-run", { type: 'POST', data: {
        model_label: this.get('label'),
        run_label: runLabel
+     }
+    }).then(function (result, error) {
+     if (error) { popupAjaxError(error); }
+    });
+  },
+
+  setInput(inputLabel) {
+    ajax("models/set-input", { type: 'POST', data: {
+       model_label: this.get('label'),
+       input_label: inputLabel
      }
     }).then(function (result, error) {
      if (error) { popupAjaxError(error); }
