@@ -96,7 +96,7 @@ module DiscourseMachineLearning
     def self.on_start(run_label, model_label, dataset_label)
       Run.set_status(run_label, Run.statuses[:training])
       Run.set_dataset(run_label, dataset_label)
-      Model.new(model_label).update_run(run_label)
+      Model.update_run(model_label, run_label)
       MessageBus.publish("/admin/ml/runs", { new_run: true })
     end
 
@@ -166,7 +166,7 @@ module DiscourseMachineLearning
         run.remove
         model = DiscourseMachineLearning::Model.new(model_label)
         if model.run_label == label
-          model.update_run(label)
+          Model.update_run(label, '')
         end
 
         MessageBus.publish("/admin/ml/runs", {

@@ -48,10 +48,10 @@ module DiscourseMachineLearning
       MessageBus.publish("/admin/ml/models", msg)
     end
 
-    def update_run(run_label)
-      Model.set_run(@label, run_label)
+    def self.update_run(model_label, run_label)
+      Model.set_run(model_label, run_label)
       msg = {
-        label: @label,
+        label: model_label,
         run_label: run_label
       }
       MessageBus.publish("/admin/ml/models", msg)
@@ -146,9 +146,7 @@ module DiscourseMachineLearning
     end
 
     def set_run
-      model_label = params[:model_label]
-      run_label = params[:run_label]
-      Model.new(model_label).update_run(run_label)
+      Model.update_run(params[:model_label], params[:run_label])
       render json: success_json
     end
 
