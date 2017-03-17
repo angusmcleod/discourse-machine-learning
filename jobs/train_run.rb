@@ -1,10 +1,10 @@
 module Jobs
   class TrainRun < Jobs::Base
-    sidekiq_options timeout: 1000
+    sidekiq_options timeout: 2000
 
     def execute(args)
-      Excon.defaults[:write_timeout] = 1000
-      Excon.defaults[:read_timeout] = 1000
+      Excon.defaults[:write_timeout] = 2000
+      Excon.defaults[:read_timeout] = 2000
 
       model_label = args[:model_label]
       dataset_label = args[:dataset_label]

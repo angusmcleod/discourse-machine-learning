@@ -29,7 +29,7 @@ export default Ember.Controller.extend({
     return this.getUploadTarget() + "/test";
   }.property(),
 
-  uploadTarget: function() {
+  getUploadTarget: function() {
     return `datasets/${this.getModelLabel()}/${this.get('dataLabel')}`
   },
 

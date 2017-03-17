@@ -9,7 +9,6 @@ gem 'docker-api', '1.33.2'
 
 after_initialize do
   load File.expand_path('../jobs/build_image.rb', __FILE__)
-  load File.expand_path('../jobs/eval_model.rb', __FILE__)
   load File.expand_path('../jobs/train_run.rb', __FILE__)
   load File.expand_path('../jobs/test_run.rb', __FILE__)
   load File.expand_path("../lib/dataset.rb", __FILE__)

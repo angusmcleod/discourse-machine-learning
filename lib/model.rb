@@ -17,6 +17,7 @@ module DiscourseMachineLearning
       @namespace = @conf["namespace"]
       @train_cmd = @conf["train_cmd"]
       @test_cmd = @conf["test_cmd"]
+      @eval_cmd = @conf["eval_cmd"]
       @mount_dir = @conf["mount_dir"]
       @run_label = Model.get_run(label)
       @input = Model.get_input(label)
@@ -65,6 +66,38 @@ module DiscourseMachineLearning
       MessageBus.publish("/admin/ml/models", msg)
     end
 
+    def eval(input)
+      Excon.defaults[:write_timeout] = 1000
+      Excon.defaults[:read_timeout] = 1000
+
+      label = @label
+      run = DiscourseMachineLearning::Run.new(label)
+      eval_cmd = @eval_cmd % { :input => input }
+      model_root = File.join(Rails.root, 'plugins/discourse-machine-learning/ml_models')
+      model_host_dir = File.join(model_root, model.label)
+      model_mount_dir = model.mount_dir
+
+      container = Docker::Container.create(
+        'Image' => model.namespace,
+        'Volumes' => {
+          model_mount_dir => { model_host_dir => 'rw' }
+        }
+      )
+
+      container.start('Binds' => [
+        "/#{model_host_dir}:/#{model_mount_dir}"
+      ])
+
+      container.exec(["bash", "-c", eval_cmd]) { |stream, chunk|
+        puts "#{stream}: #{chunk}"
+        if chunk.include? "OUTPUT"
+          output = output('OUTPUT: ').last
+        end
+      }
+
+      output
+    end
+
     def self.set_input(label, input_label)
       PluginStore.set("discourse-machine-learning", "#{label}_input", input_label)
     end
@@ -79,11 +112,6 @@ module DiscourseMachineLearning
 
     def self.get_run(label)
       PluginStore.get("discourse-machine-learning", "#{label}_run")
-    end
-
-    def on_eval_complete(label, output)
-      output = output('OUTPUT').last
-      print (output)
     end
 
     def self.all
@@ -134,8 +162,9 @@ module DiscourseMachineLearning
     def eval
       label = params[:label]
       input = params[:input]
-      if Docker::Image.exist?(DiscourseMachineLearning::Model.new(model_label).namespace)
-        Jobs.enqueue(:eval_model, label: label, input: input)
+      model = Model.new(model_label)
+      if Docker::Image.exist?(model.namespace)
+        model.eval(input)
       else
         return render json: failed_json.merge(message: I18n.t("ml.model.no_image", model_label: model_label))
       end

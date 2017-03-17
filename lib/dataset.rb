@@ -85,7 +85,7 @@ module DiscourseMachineLearning
       File.open(file_path, "wb") { |f| f << file.read }
 
       MessageBus.publish("/uploads/txt", { url: file_path }.as_json, user_ids: [current_user.id])
-      render nothing: true
+      render json: success_json
     end
 
     def destroy

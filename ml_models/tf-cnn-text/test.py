@@ -10,8 +10,8 @@ from text_cnn import TextCNN
 # ==================================================
 
 # Eval Parameters
-tf.flags.DEFINE_string("input", "", "Input to run")
-tf.flags.DEFINE_integer("batch_size", 1, "Batch Size (default: 64)")
+tf.flags.DEFINE_string("test_data_path", "./data/test.txt", "Data path to evaluation")
+tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
 tf.flags.DEFINE_string("checkpoint_dir", "", "Checkpoint directory from training run")
 
 # Misc Parameters
@@ -27,8 +27,14 @@ for attr, value in sorted(FLAGS.__flags.items()):
 print("")
 
 # Load data. Load your own data here
+print("Loading data...")
+x_test, y_test, vocabulary, vocabulary_inv, onehot_label, max_sequence_length = data_helpers.load_data( FLAGS.test_data_path, FLAGS.checkpoint_dir )
+y_test = np.argmax(y_test, axis=1)
+print("Labels: %d: %s" % ( len(onehot_label), ','.join( sorted(onehot_label.values()) ) ) )
+print("Vocabulary size: {:d}".format(len(vocabulary)))
+print("Test set size {:d}".format(len(y_test)))
 
-print("\nRunning...\n")
+print("\nEvaluating...\n")
 
 # Evaluation
 # ==================================================
@@ -53,7 +59,20 @@ with graph.as_default():
 
         # Tensors we want to evaluate
         predictions = graph.get_operation_by_name("output/predictions").outputs[0]
-        prediction = sess.run(predictions, {input_x: [FLAGS.input], dropout_keep_prob: 1.0})
 
-# Print output
-print("OUTPUT: ", prediction)
+        # Generate batches for one epoch
+        batches = data_helpers.batch_iter(x_test, FLAGS.batch_size, 1, shuffle=False)
+
+        # Collect the predictions here
+        all_predictions = []
+
+        for x_test_batch in batches:
+            batch_predictions = sess.run(predictions, {input_x: x_test_batch, dropout_keep_prob: 1.0})
+            all_predictions = np.concatenate([all_predictions, batch_predictions])
+
+# Print accuracy
+print("y_test: " + str(y_test))
+print("all_predictions: " + str(all_predictions))
+correct_predictions = float(sum(all_predictions == y_test))
+print("Total number of test examples: {}".format(len(y_test)))
+print("ACCURACY:{:g}".format(correct_predictions/float(len(y_test))))
