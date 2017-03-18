@@ -10,27 +10,7 @@ module Jobs
       dataset_label = args[:dataset_label]
       model = DiscourseMachineLearning::Model.new(model_label)
 
-      model_root = File.join(Rails.root, 'plugins/discourse-machine-learning/ml_models')
-      model_host_dir = File.join(model_root, model_label)
-      model_mount_dir = model.mount_dir
-
-      dataset_root = File.join(Rails.root, 'public/plugins/discourse-machine-learning')
-      dataset_host_dir = File.join(dataset_root, model_label, dataset_label)
-      dataset_mount_dir = File.join(model.mount_dir, "data")
-
-      container = Docker::Container.create(
-        'Image' => model.namespace,
-        'Volumes' => {
-          dataset_mount_dir => { dataset_host_dir => 'rw' },
-          model_mount_dir => { model_host_dir => 'rw' }
-        }
-      )
-
-      container.start('Binds' => [
-        "/#{dataset_host_dir}:/#{dataset_mount_dir}",
-        "/#{model_host_dir}:/#{model_mount_dir}"
-      ])
-
+      container = DiscourseMachineLearning::DockerHelper.get_container(model, dataset_label)
       container.exec(["bash", "-c", model.train_cmd]) { |stream, chunk|
         puts "#{stream}: #{chunk}"
         if chunk.include? "OUTPUT_DIR"

@@ -67,27 +67,11 @@ module DiscourseMachineLearning
     end
 
     def eval(input)
-      Excon.defaults[:write_timeout] = 1000
-      Excon.defaults[:read_timeout] = 1000
+      checkpoint_dir = File.join(@mount_dir, 'runs', @run_label, '/checkpoints')
+      eval_cmd = @eval_cmd % { :checkpoint_dir => checkpoint_dir, :input => input }
+      output = ''
 
-      label = @label
-      run = DiscourseMachineLearning::Run.new(label)
-      eval_cmd = @eval_cmd % { :input => input }
-      model_root = File.join(Rails.root, 'plugins/discourse-machine-learning/ml_models')
-      model_host_dir = File.join(model_root, model.label)
-      model_mount_dir = model.mount_dir
-
-      container = Docker::Container.create(
-        'Image' => model.namespace,
-        'Volumes' => {
-          model_mount_dir => { model_host_dir => 'rw' }
-        }
-      )
-
-      container.start('Binds' => [
-        "/#{model_host_dir}:/#{model_mount_dir}"
-      ])
-
+      container = DiscourseMachineLearning::DockerHelper.get_container(self)
       container.exec(["bash", "-c", eval_cmd]) { |stream, chunk|
         puts "#{stream}: #{chunk}"
         if chunk.include? "OUTPUT"

@@ -12,6 +12,7 @@ after_initialize do
   load File.expand_path('../jobs/train_run.rb', __FILE__)
   load File.expand_path('../jobs/test_run.rb', __FILE__)
   load File.expand_path("../lib/dataset.rb", __FILE__)
+  load File.expand_path("../lib/docker.rb", __FILE__)
   load File.expand_path("../lib/input.rb", __FILE__)
   load File.expand_path("../lib/model.rb", __FILE__)
   load File.expand_path("../lib/run.rb", __FILE__)
