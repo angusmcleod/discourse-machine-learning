@@ -5,7 +5,7 @@ module DiscourseMachineLearning
     attr_reader :label, :model_label, :dataset_label
     attr_accessor :status, :accuracy
 
-    MODEL_DIR = "#{Rails.root}/plugins/discourse-machine-learning/ml_models/"
+    MODEL_DIR = "#{Rails.root}/plugins/discourse-machine-learning/models/"
 
     def initialize(label, model_label)
       @label = label
@@ -55,6 +55,10 @@ module DiscourseMachineLearning
 
     def self.get_status(label)
       PluginStore.get("discourse-machine-learning", "#{label}_status")
+    end
+
+    def self.is_ready?(label)
+      Run.get_status(label) == Run.statuses[:tested]
     end
 
     def self.set_dataset(label, dataset_label)
@@ -140,7 +144,10 @@ module DiscourseMachineLearning
       model_label = params[:model_label]
       dataset_label = params[:dataset_label]
       Run.on_init(model_label, dataset_label)
-      if Docker::Image.exist?(DiscourseMachineLearning::Model.new(model_label).namespace)
+      model = DiscourseMachineLearning::Model.new(model_label)
+      image = DiscourseMachineLearning::Image.new(model.image_name)
+
+      if image.ready
         Jobs.enqueue(:train_run, model_label: model_label, dataset_label: dataset_label)
       else
         render json: failed_json.merge(message: I18n.t("ml.model.no_image", model_label: model_label))
@@ -151,7 +158,10 @@ module DiscourseMachineLearning
     def test
       label = params[:label]
       model_label = params[:model_label]
-      if Docker::Image.exist?(DiscourseMachineLearning::Model.new(model_label).namespace)
+      model = DiscourseMachineLearning::Model.new(model_label)
+      image = DiscourseMachineLearning::Image.new(model.image_name)
+
+      if image.ready
         Jobs.enqueue(:test_run, label: label, model_label: model_label)
       else
         render json: failed_json.merge(message: I18n.t("ml.model.no_image", model_label: model_label))

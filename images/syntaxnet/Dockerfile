@@ -23,5 +23,3 @@ RUN cd $SYNTAXNETDIR/models/syntaxnet \
     && bazel test --genrule_strategy=standalone syntaxnet/... util/utf8/...
 
 WORKDIR $SYNTAXNETDIR/models/syntaxnet
-
-ADD parse.sh syntaxnet/

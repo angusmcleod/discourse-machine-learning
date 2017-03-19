@@ -16,7 +16,7 @@ module Jobs
       checkpoint_dir = File.join(model.mount_dir, 'runs', label, '/checkpoints')
       test_cmd = model.test_cmd % { :checkpoint_dir => checkpoint_dir }
 
-      container = DiscourseMachineLearning::DockerHelper.get_container(model, run.dataset_label)
+      container = DiscourseMachineLearning::Container.create(model.label, run.dataset_label)
       container.exec(["bash", "-c", test_cmd]) { |stream, chunk|
         puts "#{stream}: #{chunk}"
         if chunk.include? "ACCURACY"

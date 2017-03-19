@@ -27,7 +27,7 @@ class vBulletinSpider(scrapy.Spider):
 
     def generate_data_dir_path(self):
         script_dir = os.path.dirname(os.path.realpath(__file__))
-        plugin_dir = script_dir.split("data_helpers",1)[0]
+        plugin_dir = script_dir.split("helpers",1)[0]
         model_dir = plugin_dir + '/public/tf-cnn-text/'
         timestamp = str(int(time.time()))
         return model_dir + timestamp

@@ -5,6 +5,15 @@ en:
         actions: "Actions"
         status: "Status"
         destroy: "Delete"
+        image:
+          title: "Images"
+          label: "Image"
+          build: "Build"
+          remove: "Remove"
+          status:
+            1: "None"
+            2: "Building"
+            3: "Built"
         dataset:
           title: "Datasets"
           label: "Dataset"
@@ -21,10 +30,7 @@ en:
           type_label: "Type"
           type:
             1: "Pre-Trained"
-            2: "Trainable"
-          image: "Image"
-          build: "Build"
-          remove: "Remove"
+            2: "Standard"
           train:
             label: "Train"
             title: "Train model with a dataset"
@@ -43,12 +49,8 @@ en:
             done: "Done"
           data: "Data"
           status:
-            1: "No Image"
-            2: "Building Image"
-            3: "Image Built"
-            4: "Training"
-            5: "Building Container"
-            6: "Container Running"
+            1: "Ready"
+            2: "Not Ready"
         run:
           title: "Runs"
           label: "Run"

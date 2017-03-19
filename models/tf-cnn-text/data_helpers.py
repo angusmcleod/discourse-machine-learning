@@ -29,30 +29,6 @@ def clean_str(string):
     return string.strip().lower()
 
 
-def load_data_and_labels( train_data_path ):
-    """
-    Loads MR polarity data from files, splits the data into words and generates labels.
-    Returns split sentences and labels.
-    """
-    # Load data from files
-    data = list()
-    labels = list()
-    for line in codecs.open( train_data_path, 'r', encoding='utf8' ).readlines() :
-        if 1 > len( line.strip() ) : continue;
-        t = line.split(u"\t");
-        if 2 != len(t) :
-            print("data format error" + line)
-            continue;
-        data.append(t[0])
-        labels.append(t[1])
-    data   = [s.strip() for s in data]
-    labels = [s.strip() for s in labels]
-    # Split by words
-    x_text = [clean_str(sent) for sent in data]
-    x_text = [s.split(u" ") for s in x_text]
-    return [x_text, labels]
-
-
 def pad_sentences(sentences, max_sent_len_path):
     """
     Pads all sentences to the same length. The length is defined by the longest sentence.
@@ -169,7 +145,7 @@ def build_input_data(sentences, vocabulary, labels, label_onehot):
 
 def load_data( train_data_path, checkpoint_dir="" ):
     """
-    Loads and preprocessed data for the MR dataset.
+    Loads and preprocesses data.
     Returns input vectors, labels, vocabulary, and inverse vocabulary.
     """
     # Load and preprocess data
@@ -182,6 +158,30 @@ def load_data( train_data_path, checkpoint_dir="" ):
     uniq_labels, label_onehot, onehot_label = build_onehot(labels, label_path)
     x, y = build_input_data(sentences_padded, vocabulary, labels, label_onehot)
     return [x, y, vocabulary, vocabulary_inv, onehot_label, max_sequence_length]
+
+
+def load_data_and_labels( train_data_path ):
+    """
+    Loads data from files, splits the data into words and generates labels.
+    Returns split sentences and labels.
+    """
+    # Load data from files
+    data = list()
+    labels = list()
+    for line in codecs.open( train_data_path, 'r', encoding='utf8' ).readlines() :
+        if 1 > len( line.strip() ) : continue;
+        t = line.split(u"\t");
+        if 2 != len(t) :
+            print("data format error" + line)
+            continue;
+        data.append(t[0])
+        labels.append(t[1])
+    data   = [s.strip() for s in data]
+    labels = [s.strip() for s in labels]
+    # Split by words
+    x_text = [clean_str(sent) for sent in data]
+    x_text = [s.split(u" ") for s in x_text]
+    return [x_text, labels]
 
 
 def batch_iter(data, batch_size, num_epochs, shuffle=True):
@@ -202,3 +202,36 @@ def batch_iter(data, batch_size, num_epochs, shuffle=True):
             start_index = batch_num * batch_size
             end_index = min((batch_num + 1) * batch_size, data_size)
             yield shuffled_data[start_index:end_index]
+
+
+#### for eval
+
+def load_eval_data(input, checkpoint_dir=""):
+    """
+    Loads and preprocesses input.
+    Returns input vectors, vocabulary, and inverse vocabulary.
+    """
+    # Load and preprocess data
+    max_sent_len_path = "" if len(checkpoint_dir)<1 else checkpoint_dir+"/max_sent_len"
+    vocab_path        = "" if len(checkpoint_dir)<1 else checkpoint_dir+"/vocab"
+    parsed = [input.split(u" ")]
+    sentences_padded, max_sequence_length = pad_sentences(parsed, max_sent_len_path)
+    vocabulary, vocabulary_inv = build_vocab(sentences_padded, vocab_path)
+    x = build_eval_input_data(sentences_padded, vocabulary)
+    return x
+
+
+def build_eval_input_data(sentences, vocabulary):
+    """
+    Maps sentencs and labels to vectors based on a vocabulary.
+    """
+    vL = []
+    for sentence in sentences :
+        wL = []
+        for word in sentence :
+            if word in vocabulary :
+                wL.append( vocabulary[word] )
+            else :
+                wL.append( vocabulary[UNK_MARK] )
+        vL.append(wL)
+    return np.array(vL)

@@ -1,0 +1,14 @@
+<div class="col value first large-label">
+  {{image.name}}
+</div>
+<div class="col value label">
+  {{statusLabel}}
+</div>
+<div class="col value large-label">
+  {{#if built}}
+    {{d-button action="removeImage" actionParam=image class="btn btn-small" label="ml.admin.image.remove"}}
+  {{else}}
+    {{d-button action="buildImage" actionParam=image class="btn btn-small" label="ml.admin.image.build" disabled=building}}
+  {{/if}}
+</div>
+<div class="clearfix"></div>

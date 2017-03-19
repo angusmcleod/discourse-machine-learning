@@ -4,48 +4,64 @@ module DiscourseMachineLearning
   class Model
     include ActiveModel::SerializerSupport
 
-    attr_reader :label
-    attr_accessor :conf, :type, :namespace, :status, :run_label, :train_cmd, :test_cmd, :mount_dir
+    attr_reader :label, :image_name, :type, :train_cmd, :test_cmd, :mount_dir
+    attr_accessor :run_label, :image_status, :run_status, :status
 
-    MODEL_DIR = "#{Rails.root}/plugins/discourse-machine-learning/ml_models/"
+    MODEL_DIR = "#{Rails.root}/plugins/discourse-machine-learning/models/"
 
     def initialize(label)
       @label = label
-      @conf = YAML.load(File.read(File.join(MODEL_DIR, @label, 'conf.yml')))
-      @source = @conf["source"]
-      @type = @conf["type"]
-      @namespace = @conf["namespace"]
-      @train_cmd = @conf["train_cmd"]
-      @test_cmd = @conf["test_cmd"]
-      @eval_cmd = @conf["eval_cmd"]
-      @mount_dir = @conf["mount_dir"]
-      @run_label = Model.get_run(label)
-      @input = Model.get_input(label)
-      @status = get_static_status
-      ## how to store checkpoints? Need new table in db
+      conf = YAML.load(File.read(File.join(MODEL_DIR, @label, 'conf.yml')))
+      conf.each do |key, value|
+        self.instance_variable_set("@#{key}".to_sym, value)
+      end
+      @image_ready = DiscourseMachineLearning::Image.is_ready?(@image_name)
+
+      if @type == Model.types[:standard]
+        @run_label = Model.get_run(label)
+        @run_ready = DiscourseMachineLearning::Run.is_ready?(@run_label)
+      end
+
+      @status = ready ? Model.statuses[:ready] : Model.statuses[:not_ready]
+    end
+
+    def ready
+      @image_ready && (@type == Model.statuses[:pre_trained] || @run_ready) && container_ready
+    end
+
+    def conatiner_ready
+      DiscourseMachineLearning::Container.ready(model_label)
     end
 
     def self.statuses
-      @statuses ||= Enum.new(no_image: 1,
-                             building: 2,
-                             built: 3)
+      @statuses ||= Enum.new(ready: 1,
+                             not_ready: 2)
     end
 
-    def get_static_status
-      if Docker::Image.exist?(@namespace)
-        Model.statuses[:built]
-      else
-        Model.statuses[:no_image]
-      end
+    def self.types
+      @types ||= Enum.new(standard: 1,
+                          pre_trained: 2)
     end
 
-    def update_status(status=nil)
-      status = status || get_static_status
-      msg = {
-        label: @label,
-        status: status
+    def self.get_dataset(label)
+      PluginStore.get("discourse-machine-learning", "#{label}_dataset")
+    end
+
+    def eval(input)
+      checkpoint_dir = File.join(@mount_dir, 'runs', @run_label, '/checkpoints')
+      eval_cmd = @eval_cmd % { :checkpoint_dir => checkpoint_dir, :input => "#{input}" }
+      output = ''
+      run = DiscourseMachineLearning::Run.new(@run_label)
+
+      container = DiscourseMachineLearning::Container.create(@label, run.dataset_label)
+      container.exec(["bash", "-c", eval_cmd]) { |stream, chunk|
+        puts "#{stream}: #{chunk}"
+        if chunk.include? "OUTPUT"
+          output = chunk('OUTPUT: ').last
+        end
       }
-      MessageBus.publish("/admin/ml/models", msg)
+
+      output
     end
 
     def self.update_run(model_label, run_label)
@@ -55,39 +71,6 @@ module DiscourseMachineLearning
         run_label: run_label
       }
       MessageBus.publish("/admin/ml/models", msg)
-    end
-
-    def update_input(input_label)
-      Model.set_input(@label, input_label)
-      msg = {
-        label: @label,
-        input_label: input_label
-      }
-      MessageBus.publish("/admin/ml/models", msg)
-    end
-
-    def eval(input)
-      checkpoint_dir = File.join(@mount_dir, 'runs', @run_label, '/checkpoints')
-      eval_cmd = @eval_cmd % { :checkpoint_dir => checkpoint_dir, :input => input }
-      output = ''
-
-      container = DiscourseMachineLearning::DockerHelper.get_container(self)
-      container.exec(["bash", "-c", eval_cmd]) { |stream, chunk|
-        puts "#{stream}: #{chunk}"
-        if chunk.include? "OUTPUT"
-          output = output('OUTPUT: ').last
-        end
-      }
-
-      output
-    end
-
-    def self.set_input(label, input_label)
-      PluginStore.set("discourse-machine-learning", "#{label}_input", input_label)
-    end
-
-    def self.get_input(label)
-      PluginStore.get("discourse-machine-learning", "#{label}_input")
     end
 
     def self.set_run(label, run_label)
@@ -108,36 +91,8 @@ module DiscourseMachineLearning
       render_serialized(Model.all, ModelSerializer)
     end
 
-    def build_image
-      model_label = params[:model_label]
-      if !Docker::Image.exist?(Model.new(model_label).namespace)
-        Jobs.enqueue(:build_image, model_label: model_label)
-      end
-      render json: success_json
-    end
-
-    def remove_image
-      model_label = params[:model_label]
-      model = Model.new(model_label)
-      image = Docker::Image.get(model.namespace)
-      begin
-        image.remove(:force => true)
-      rescue Exception => e
-        return render json: failed_json.merge(message: e), status: 400
-      end
-      model.update_status()
-      render json: success_json
-    end
-
     def set_run
       Model.update_run(params[:model_label], params[:run_label])
-      render json: success_json
-    end
-
-    def set_input
-      model_label = params[:model_label]
-      input_label = params[:input_label]
-      Model.new(model_label).update_input(input_label)
       render json: success_json
     end
 
@@ -145,7 +100,8 @@ module DiscourseMachineLearning
       label = params[:label]
       input = params[:input]
       model = Model.new(model_label)
-      if Docker::Image.exist?(model.namespace)
+      image = DiscourseMachineLearning::Image.new(model.image_name)
+      if image.ready
         model.eval(input)
       else
         return render json: failed_json.merge(message: I18n.t("ml.model.no_image", model_label: model_label))
@@ -155,6 +111,6 @@ module DiscourseMachineLearning
   end
 
   class ModelSerializer < ::ApplicationSerializer
-    attributes :label, :type, :namespace, :run_label, :status
+    attributes :label, :type, :image_name, :image_status, :run_label, :run_status, :status
   end
 end

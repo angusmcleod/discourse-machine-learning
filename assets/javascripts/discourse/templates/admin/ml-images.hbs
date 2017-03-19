@@ -1,18 +1,18 @@
 <div class='table ml'>
   <div class="heading-container">
-    <div class="col heading first label">{{i18n 'ml.admin.model.label'}}</div>
-    <div class="col heading label">{{i18n 'ml.admin.model.type_label'}}</div>
-    <div class="col heading medium-label">{{i18n 'ml.admin.image.label'}}</div>
-    <div class="col heading label">{{i18n 'ml.admin.run.label'}}</div>
+    <div class="col heading first large-label">{{i18n 'ml.admin.image.label'}}</div>
     <div class="col heading label">{{i18n 'ml.admin.status'}}</div>
     <div class="col heading large-label">{{i18n 'ml.admin.actions'}}</div>
+    {{#if activeLabel}}
+      {{d-button action="clearFilter" class="btn-primary" label="admin.logs.staff_actions.clear_filters" icon="cross"}}
+    {{/if}}
     <div class="clearfix"></div>
   </div>
 
   {{#conditional-loading-spinner condition=loading}}
-    {{#each models as |m|}}
-      <div class='admin-list-item'>
-        {{ml-model model=m}}
+    {{#each visibleImages as |i|}}
+      <div class="admin-list-item">
+        {{ml-image image=i}}
       </div>
     {{else}}
       {{i18n 'search.no_results'}}

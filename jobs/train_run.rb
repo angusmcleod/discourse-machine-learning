@@ -10,7 +10,7 @@ module Jobs
       dataset_label = args[:dataset_label]
       model = DiscourseMachineLearning::Model.new(model_label)
 
-      container = DiscourseMachineLearning::DockerHelper.get_container(model, dataset_label)
+      container = DiscourseMachineLearning::Container.create(model_label, dataset_label)
       container.exec(["bash", "-c", model.train_cmd]) { |stream, chunk|
         puts "#{stream}: #{chunk}"
         if chunk.include? "OUTPUT_DIR"

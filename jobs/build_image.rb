@@ -5,11 +5,11 @@ module Jobs
     def execute(args)
       model_label = args[:model_label]
       model = DiscourseMachineLearning::Model.new(model_label)
-      model.update_status(DiscourseMachineLearning::Model.statuses[:building])
+      image.update_status(DiscourseMachineLearning::Model.statuses[:building])
 
-      DiscourseMachineLearning::DockerHelper.build_image(model)
+      DiscourseMachineLearning::Image.build(model.label)
 
-      model.update_status
+      image.update_status
     end
   end
 end
