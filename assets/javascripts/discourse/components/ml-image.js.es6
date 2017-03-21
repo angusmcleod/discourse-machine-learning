@@ -1,5 +1,3 @@
-import { ajax } from 'discourse/lib/ajax';
-
 export default Ember.Component.extend({
   tagName: 'div',
   built: Ember.computed.gt('image.status', 2),

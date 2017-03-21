@@ -1,4 +1,3 @@
-import { ajax } from 'discourse/lib/ajax';
 import Model from '../models/model';
 
 const REQUIRED_DATA_FILES = [ "train.txt", "test.txt" ];

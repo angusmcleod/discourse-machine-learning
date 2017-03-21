@@ -18,7 +18,7 @@ const Image = Discourse.Model.extend({
     ajax("images/remove", { type: 'POST', data: {
        name: name
      }
-   }).then(function (result, error) {
+    }).then(function (result, error) {
      if (error) {
         popupAjaxError(error);
      }

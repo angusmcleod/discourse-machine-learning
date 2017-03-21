@@ -1,4 +1,3 @@
-import { ajax } from 'discourse/lib/ajax';
 import { getOwner } from 'discourse-common/lib/get-owner';
 
 export default Ember.Component.extend({

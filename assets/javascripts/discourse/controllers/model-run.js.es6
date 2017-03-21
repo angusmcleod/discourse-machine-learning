@@ -1,4 +1,3 @@
-import { ajax } from 'discourse/lib/ajax';
 import Run from '../models/run';
 
 export default Ember.Controller.extend({

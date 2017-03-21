@@ -1,4 +1,3 @@
-import { ajax } from 'discourse/lib/ajax';
 import Dataset from '../models/dataset';
 
 export default Ember.Controller.extend({
