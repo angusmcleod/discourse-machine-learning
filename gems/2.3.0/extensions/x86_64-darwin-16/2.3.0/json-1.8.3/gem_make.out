@@ -1,0 +1,13 @@
+current directory: /Users/angusmcleod/civil/discourse/plugins/discourse-machine-learning/gems/2.3.0/gems/json-1.8.3/ext/json
+/Users/angusmcleod/.rvm/rubies/ruby-2.3.0/bin/ruby -r ./siteconf20170413-76402-12ifj9w.rb extconf.rb
+creating Makefile
+
+current directory: /Users/angusmcleod/civil/discourse/plugins/discourse-machine-learning/gems/2.3.0/gems/json-1.8.3/ext/json
+make "DESTDIR=" clean
+
+current directory: /Users/angusmcleod/civil/discourse/plugins/discourse-machine-learning/gems/2.3.0/gems/json-1.8.3/ext/json
+make "DESTDIR="
+make: Nothing to be done for `all'.
+
+current directory: /Users/angusmcleod/civil/discourse/plugins/discourse-machine-learning/gems/2.3.0/gems/json-1.8.3/ext/json
+make "DESTDIR=" install

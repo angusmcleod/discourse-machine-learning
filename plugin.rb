@@ -5,6 +5,7 @@
 
 register_asset 'stylesheets/ml.scss', :desktop
 
+gem 'json', '1.8.3'
 gem 'docker-api', '1.33.2'
 
 after_initialize do
