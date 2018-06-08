@@ -5,8 +5,7 @@
 
 register_asset 'stylesheets/ml.scss', :desktop
 
-gem 'json', '1.8.3'
-gem 'docker-api', '1.33.2'
+gem 'docker-api', '1.34.2'
 
 after_initialize do
   load File.expand_path('../jobs/build_image.rb', __FILE__)

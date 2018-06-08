@@ -1,7 +1,3 @@
-**Where this is**
-
-This i
-
 **[This code belongs to the "Implementing a CNN for Text Classification in Tensorflow" blog post.](http://www.wildml.com/2015/12/implementing-a-cnn-for-text-classification-in-tensorflow/)**
 
 It is slightly simplified implementation of Kim's [Convolutional Neural Networks for Sentence Classification](http://arxiv.org/abs/1408.5882) paper in Tensorflow.
@@ -54,13 +50,13 @@ optional arguments:
 Train:
 
 ```bash
-python ./train.py --train_data_path="./data/advice-class/train.txt"
+./train.py
 ```
 
 ## Evaluating
 
 ```bash
-python ./eval.py --checkpoint_dir="./runs/1463968251/checkpoints/" --test_data_path="./data/advice-class/test.txt"
+./eval.py --eval_train --checkpoint_dir="./runs/1459637919/checkpoints/"
 ```
 
 Replace the checkpoint dir with the output from the training. To use your own data, change the `eval.py` script to load your data.

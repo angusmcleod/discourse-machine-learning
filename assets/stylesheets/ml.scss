@@ -1,5 +1,5 @@
 @import "common/admin/admin_base";
-@import "common/components/navs.css.scss";
+@import "common/components/navs";
 
 .ml {
   @extend .staff-actions;
@@ -21,6 +21,10 @@
   .large-label {
     width: 30%;
     flex: 0 1 auto;
+  }
+  .col ul {
+    margin: 0;
+    list-style: none;
   }
 }
 

@@ -16,12 +16,11 @@ en:
             3: "Built"
         dataset:
           title: "Datasets"
-          label: "Dataset"
-          train_link: "Train Data"
-          test_link: "Test Data"
+          label: "Set"
+          link: "Data"
           upload:
             title: "Upload a dataset for a model"
-            data: "{{dataType}} data"
+            data: "Data"
             save: "Save data"
             no_model: "Select a model"
         model:

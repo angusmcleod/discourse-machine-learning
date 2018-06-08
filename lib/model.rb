@@ -11,15 +11,15 @@ module DiscourseMachineLearning
 
     def initialize(label)
       @label = label
-      conf = YAML.load(File.read(File.join(MODEL_DIR, @label, 'conf.yml')))
+      conf = YAML.load(File.read(File.join(MODEL_DIR, 'conf', "#{@label}.yml")))
       conf.each do |key, value|
         self.instance_variable_set("@#{key}".to_sym, value)
       end
-      @image_ready = DiscourseMachineLearning::Image.is_ready?(@image_name)
+      @image_ready = DiscourseMachineLearning::Image.ready(@image_name)
 
       if @type == Model.types[:standard]
         @run_label = Model.get_run(label)
-        @run_ready = DiscourseMachineLearning::Run.is_ready?(@run_label)
+        @run_ready = DiscourseMachineLearning::Run.ready(@run_label)
       end
 
       @status = ready ? Model.statuses[:ready] : Model.statuses[:not_ready]
@@ -82,7 +82,9 @@ module DiscourseMachineLearning
     end
 
     def self.all
-      Dir.glob(File.join(MODEL_DIR, "*")).map { |model| Model.new(File.basename(model)) }
+      Dir.glob(File.join(MODEL_DIR, "*"))
+        .reject{ |f| File.basename(f) === 'conf' }
+        .map { |f| Model.new(File.basename(f)) }
     end
   end
 
@@ -99,14 +101,17 @@ module DiscourseMachineLearning
     def eval
       label = params[:label]
       input = params[:input]
+
       model = Model.new(model_label)
+
       image = DiscourseMachineLearning::Image.new(model.image_name)
+
       if image.ready
         model.eval(input)
+        render json: success_json
       else
-        return render json: failed_json.merge(message: I18n.t("ml.model.no_image", model_label: model_label))
+        render json: failed_json.merge(message: I18n.t("ml.model.no_image", model_label: model_label))
       end
-      render json: success_json
     end
   end
 

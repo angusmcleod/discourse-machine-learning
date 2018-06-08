@@ -5,7 +5,7 @@ const REQUIRED_DATA_FILES = [ "train.txt", "test.txt" ];
 export default Ember.Controller.extend({
   modelLabels: [],
   title: 'ml.admin.dataset.upload.title',
-  hasDataFile: Ember.A(),
+  dataFiles: Ember.A(),
 
   setup: function() {
     Model.list().then((models) => {
@@ -15,22 +15,13 @@ export default Ember.Controller.extend({
         modelLabels.push({name: model.get('label'), value: value});
         value++;
       })
-      this.set('modelLabels', modelLabels)
-      this.set('dataLabel', + new Date())
+      this.set('modelLabels', modelLabels);
     })
   }.on('init'),
 
-  trainUploadTarget: function() {
-    return this.getUploadTarget() + "/train";
-  }.property(),
-
-  testUploadTarget: function() {
-    return this.getUploadTarget() + "/test";
-  }.property(),
-
-  getUploadTarget: function() {
-    return `datasets/${this.getModelLabel()}/${this.get('dataLabel')}`
-  },
+  uploadTarget: function() {
+    return `datasets/${this.getModelLabel()}/${this.get('setLabel')}`
+  }.property('setLabel'),
 
   getModelLabel: function() {
     const index = this.get('modelIndex');
@@ -39,24 +30,18 @@ export default Ember.Controller.extend({
     return model.name;
   },
 
-  trainUploadTitle: function() {
-    return I18n.t('ml.admin.dataset.upload.data', {dataType: 'Train'})
+  uploadTitle: function() {
+    return I18n.t('ml.admin.dataset.upload.data')
   }.property(),
 
-  testUploadTitle: function() {
-    return I18n.t('ml.admin.dataset.upload.data', {dataType: 'Test'})
-  }.property(),
-
-  hasRequiredDataFiles: function() {
-    return _.isEqual(this.get('hasDataFile'), REQUIRED_DATA_FILES)
-  }.property('hasDataFile.[]'),
+  hasFiles: Ember.computed.notEmpty('dataFiles'),
 
   actions: {
     dataUploaded(upload) {
-      const hasDataFile = this.get('hasDataFile');
+      const dataFiles = this.get('dataFiles');
       let dataType = upload.url.split('/').slice(-1).pop()
-      if (hasDataFile.indexOf(dataType) === -1) {
-        hasDataFile.pushObject(dataType);
+      if (dataFiles.indexOf(dataType) === -1) {
+        dataFiles.pushObject(dataType);
       }
     },
 

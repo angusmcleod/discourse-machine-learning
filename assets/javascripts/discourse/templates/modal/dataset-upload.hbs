@@ -1,10 +1,10 @@
 {{#d-modal-body class="dataset-upload-modal" title=title}}
   {{combo-box valueAttribute="value" content=modelLabels value=modelIndex none="ml.admin.dataset.upload.no_model"}}
+  {{input value=setName placeholder='Set Name'}}
   {{#if modelIndex}}
-    {{txt-uploader uploadUrl=trainUploadTarget uploadText=trainUploadTitle dataUploaded="dataUploaded"}}
-    {{txt-uploader uploadUrl=testUploadTarget uploadText=testUploadTitle dataUploaded="dataUploaded"}}
+    {{txt-uploader uploadUrl=uploadTarget uploadText=uploadTitle dataUploaded="dataUploaded"}}
   {{/if}}
-  {{#if hasRequiredDataFiles}}
+  {{#if hasFiles}}
     {{d-button action="completeUpload" label="ml.admin.dataset.upload.save" class="btn-primary pull-right"}}
   {{/if}}
 {{/d-modal-body}}

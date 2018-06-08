@@ -1,32 +1,33 @@
 module DiscourseMachineLearning
+  DATA_DIR = "#{Rails.root}/plugins/discourse-machine-learning/public/"
+
+  class Data
+    include ActiveModel::SerializerSupport
+
+    attr_reader :filename, :link, :size
+
+    def initialize(filename, set_label, model_label)
+      @filename = filename
+      @link = UrlHelper.schemaless "#{Discourse.base_url}/plugins/discourse-machine-learning/#{model_label}/#{set_label}/#{filename}"
+      @size = File.size(File.join(DATA_DIR, model_label, set_label, filename))
+    end
+  end
+
   class Dataset
     include ActiveModel::SerializerSupport
 
-    attr_reader :label
-    attr_accessor :model_label, :train_link, :test_link, :train_size, :test_size
-
-    DATA_DIR = "#{Rails.root}/plugins/discourse-machine-learning/public/"
+    attr_reader :label, :model_label
+    attr_accessor :data
 
     def initialize(label, model_label)
       @label = label
       @model_label = model_label
-      @train_path = File.join(DATA_DIR, model_label, label, 'train.txt')
-      @test_path = File.join(DATA_DIR, model_label, label, 'test.txt')
-      public_link = "#{Discourse.base_url}/plugins/discourse-machine-learning/#{model_label}/#{label}"
-      @train_link = UrlHelper.schemaless "#{public_link}/train.txt"
-      @test_link = UrlHelper.schemaless "#{public_link}/test.txt"
-      @train_size = File.size(@train_path)
-      @test_size = File.size(@test_path)
     end
 
-    def self.all
-      datasets = []
-      model_labels = Dir.glob(File.join(DATA_DIR, "*")).map { |model| File.basename(model) }
-      model_labels.each { |model_label|
-        model_datasets = Dir.glob(File.join(DATA_DIR, model_label, "*")).map { |set| Dataset.new(File.basename(set), model_label)}
-        datasets.concat model_datasets
-      }
-      datasets
+    def data
+      @data ||= Dir.glob(File.join(DATA_DIR, @model_label, @label, "*")).map do |path|
+        Data.new(File.basename(path), @label, @model_label)
+      end
     end
 
     def remove
@@ -66,6 +67,18 @@ module DiscourseMachineLearning
       return unless s3
       s3.remove(@filename)
     end
+
+    def self.all
+      datasets = []
+
+      Dir.glob(File.join(DATA_DIR, "*")).map { |path| File.basename(path) }.each do |model_label|
+        Dir.glob(File.join(DATA_DIR, model_label, "*")).map { |path| File.basename(path) }.each do |set_label|
+          datasets.push(Dataset.new(set_label, model_label))
+        end
+      end
+
+      datasets
+    end
   end
 
   class DatasetController < ::ApplicationController
@@ -102,7 +115,15 @@ module DiscourseMachineLearning
     end
   end
 
+  class DataSerializer < ::ApplicationSerializer
+    attributes :filename, :link, :size
+  end
+
   class DatasetSerializer < ::ApplicationSerializer
-    attributes :label, :model_label, :train_link, :test_link, :train_size, :test_size
+    attributes :label, :model_label, :data
+
+    def data
+      ActiveModel::ArraySerializer.new(object.data, each_serializer: DataSerializer).as_json
+    end
   end
 end

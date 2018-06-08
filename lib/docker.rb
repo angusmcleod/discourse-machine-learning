@@ -19,6 +19,10 @@ module DiscourseMachineLearning
       MessageBus.publish("/admin/ml/images", msg)
     end
 
+    def ready
+      DiscourseMachineLearning::Image.ready(@name)
+    end
+
     def self.statuses
       @statuses ||= Enum.new(none: 1,
                              building: 2,
@@ -49,7 +53,7 @@ module DiscourseMachineLearning
       end
     end
 
-    def self.is_ready?(name)
+    def self.ready(name)
       Image.get_status(name) == Image.statuses[:built]
     end
 
@@ -58,20 +62,20 @@ module DiscourseMachineLearning
       Excon.defaults[:read_timeout] = 1000
 
       model = DiscourseMachineLearning::Model.new(model_label)
-      namespace = model.namespace
+      image_name = model.image_name
       source = model.source
       model_root = File.join(Rails.root, 'plugins/discourse-machine-learning/models')
       model_host_dir = File.join(model_root, model.label)
       model_mount_dir = model.mount_dir
 
       if source == 'hub'
-        Docker::Image.create('fromImage' => namespace) do |v|
+        Docker::Image.create('fromImage' => image_name) do |v|
           puts v
         end
       end
 
       if source == 'local'
-        Docker::Image.build_from_dir(model_host_dir, {'t' => namespace})  do |v|
+        Docker::Image.build_from_dir(model_host_dir, {'t' => image_name})  do |v|
           if (log = JSON.parse(v)) && log.has_key?("stream")
             puts log["stream"]
           end
@@ -148,7 +152,7 @@ module DiscourseMachineLearning
 
         container = Docker::Container.create(
           'name' => model.label,
-          'Image' => model.namespace,
+          'Image' => model.image_name,
           'Volumes' => volumes
         )
         container.start('Binds' => binds)

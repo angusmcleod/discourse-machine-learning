@@ -1,0 +1,8 @@
+---
+type: 2
+image_name: 'tensorflow/tensorflow:latest'
+source: 'hub'
+mount_dir: '/notebooks'
+train_cmd: "python /notebooks/train.py --positive_data_file='/notebooks/data/rt-polarity.neg' --negative_data_file='/notebooks/data/rt-polarity.pos'"
+test_cmd: "python ./test.py --checkpoint_dir='%{checkpoint_dir}' --test_data_path='/notebooks/data/test.txt'"
+eval_cmd: "python ./eval.py --checkpoint_dir='%{checkpoint_dir}' --positive_data_file='/notebooks/data/rt-polarity.neg' --negative_data_file='/notebooks/data/rt-polarity.pos'"

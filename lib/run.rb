@@ -57,7 +57,7 @@ module DiscourseMachineLearning
       PluginStore.get("discourse-machine-learning", "#{label}_status")
     end
 
-    def self.is_ready?(label)
+    def self.ready(label)
       Run.get_status(label) == Run.statuses[:tested]
     end
 
@@ -149,10 +149,10 @@ module DiscourseMachineLearning
 
       if image.ready
         Jobs.enqueue(:train_run, model_label: model_label, dataset_label: dataset_label)
+        render json: success_json
       else
         render json: failed_json.merge(message: I18n.t("ml.model.no_image", model_label: model_label))
       end
-      render json: success_json
     end
 
     def test
@@ -163,10 +163,10 @@ module DiscourseMachineLearning
 
       if image.ready
         Jobs.enqueue(:test_run, label: label, model_label: model_label)
+        render json: success_json
       else
         render json: failed_json.merge(message: I18n.t("ml.model.no_image", model_label: model_label))
       end
-      render json: success_json
     end
 
     def destroy
