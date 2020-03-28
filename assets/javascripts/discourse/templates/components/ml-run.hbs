@@ -1,20 +1,19 @@
-<div class="col value first label">
+<td>
   {{run.label}}
-</div>
-<div class="col value label">
+</td>
+<td>
   {{run.model_label}}
-</div>
-<div class="col value medium-label">
+</td>
+<td>
   <a {{action "goToDataset" run}}>{{run.dataset_label}}</a>
-</div>
-<div class="col value label">
+</td>
+<td>
   {{run.accuracy}}
-</div>
-<div class="col value label">
+</td>
+<td>
   {{status}}
-</div>
-<div class="col value large-label">
+</td>
+<td>
   {{d-button action="destroy" actionParam=run class="btn btn-small" label="ml.admin.destroy"}}
   {{d-button action="test" actionParam=run class="btn btn-small" label="ml.admin.run.test"}}
-</div>
-<div class="clearfix"></div>
+</td>

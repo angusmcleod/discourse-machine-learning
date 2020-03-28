@@ -1,7 +1,7 @@
 import { getOwner } from 'discourse-common/lib/get-owner';
 
 export default Ember.Component.extend({
-  tagName: 'div',
+  tagName: 'tr',
 
   status: function() {
     return I18n.t(`ml.admin.run.status.${this.get('run.status')}`);

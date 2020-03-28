@@ -2,8 +2,7 @@ import showModal from 'discourse/lib/show-modal';
 import { getOwner } from 'discourse-common/lib/get-owner';
 
 export default Ember.Component.extend({
-  tagName: 'div',
-  classNames: ['table-item'],
+  tagName: 'tr',
 
   typeLabel: function() {
     return I18n.t(`ml.admin.model.type.${this.get('model.type')}`);

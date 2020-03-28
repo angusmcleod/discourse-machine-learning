@@ -1,5 +1,5 @@
 export default Ember.Component.extend({
-  tagName: 'div',
+  tagName: 'tr',
   built: Ember.computed.gt('image.status', 2),
 
   statusLabel: function() {

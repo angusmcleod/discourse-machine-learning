@@ -1,4 +1,4 @@
-import computed from "ember-addons/ember-computed-decorators";
+import computed from "discourse-common/utils/decorators";
 import UploadMixin from "discourse/mixins/upload";
 
 export default Em.Component.extend(UploadMixin, {

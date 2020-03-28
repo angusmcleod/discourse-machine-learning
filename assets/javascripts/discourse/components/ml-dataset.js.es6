@@ -1,5 +1,5 @@
 export default Ember.Component.extend({
-  tagName: 'div',
+  tagName: 'tr',
 
   actions: {
     destroy(dataset) {

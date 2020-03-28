@@ -1,10 +1,10 @@
-<div class="col value first label">
+<td>
   {{dataset.label}}
-</div>
-<div class="col value label">
+</td>
+<td>
   {{dataset.model_label}}
-</div>
-<div class="col value medium-label">
+</td>
+<td>
   <ul>
     {{#each dataset.data as |d|}}
       <li>
@@ -13,8 +13,7 @@
       </li>
     {{/each}}
   </ul>
-</div>
-<div class="col value large-label">
+</td>
+<td>
   {{d-button action="destroy" actionParam=dataset class="btn btn-small" label="ml.admin.destroy"}}
-</div>
-<div class="clearfix"></div>
+</td>

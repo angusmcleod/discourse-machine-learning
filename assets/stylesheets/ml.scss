@@ -3,29 +3,6 @@
 
 .ml {
   @extend .staff-actions;
-  width: 100%;
-  .heading-container, .table-item {
-    display: flex;
-  }
-  .first {
-    margin-left: 10px;
-  }
-  .label {
-    width: 10%;
-    flex: 0 1 auto;
-  }
-  .medium-label {
-    width: 20%;
-    flex: 0 1 auto;
-  }
-  .large-label {
-    width: 30%;
-    flex: 0 1 auto;
-  }
-  .col ul {
-    margin: 0;
-    list-style: none;
-  }
 }
 
 .ml-nav-button {

@@ -1,24 +1,23 @@
-<div class='table ml'>
-  <div class="heading-container">
-    <div class="col heading first label">{{i18n 'ml.admin.run.label'}}</div>
-    <div class="col heading label">{{i18n 'ml.admin.model.label'}}</div>
-    <div class="col heading medium-label">{{i18n 'ml.admin.dataset.label'}}</div>
-    <div class="col heading label">{{i18n 'ml.admin.run.accuracy'}}</div>
-    <div class="col heading label">{{i18n 'ml.admin.status'}}</div>
-    <div class="col heading large-label">{{i18n 'ml.admin.actions'}}</div>
-    {{#if activeLabel}}
-      {{d-button action="clearFilter" class="btn-primary" label="admin.logs.staff_actions.clear_filters" icon="cross"}}
-    {{/if}}
-    <div class="clearfix"></div>
-  </div>
-
-  {{#conditional-loading-spinner condition=loading}}
+<table class='table ml'>
+  <thead>
+    <tr>
+      <th>{{i18n 'ml.admin.run.label'}}</th>
+      <th>{{i18n 'ml.admin.model.label'}}</th>
+      <th>{{i18n 'ml.admin.dataset.label'}}</th>
+      <th>{{i18n 'ml.admin.run.accuracy'}}</th>
+      <th>{{i18n 'ml.admin.status'}}</th>
+      <th>{{i18n 'ml.admin.actions'}}</th>
+      {{#if activeLabel}}
+        {{d-button action="clearFilter" class="btn-primary" label="admin.logs.staff_actions.clear_filters" icon="cross"}}
+      {{/if}}
+    </tr>
+  </thead>
+  
+  <tbody>
     {{#each visibleRuns as |r|}}
-      <div class='admin-list-item'>
-        {{ml-run run=r}}
-      </div>
+      {{ml-run run=r}}
     {{else}}
       {{i18n 'search.no_results'}}
     {{/each}}
-  {{/conditional-loading-spinner}}
-</div>
+  </tbody>
+</table>

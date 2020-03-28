@@ -1,6 +1,16 @@
 {{#d-modal-body class="model-train" title=title}}
-  {{combo-box valueAttribute="value" content=datasetLabels value=datasetIndex none="ml.admin.model.train.no_dataset"}}
-  {{#if datasetIndex}}
-    {{d-button action="startTraining" label="ml.admin.model.train.start" class="btn-primary pull-right"}}
-  {{/if}}
+  {{combo-box
+    content=datasetLabels
+    value=datasetIndex
+    valueProperty="value"
+    onChange=(action (mut datasetIndex))
+    options=(hash
+      none="ml.admin.model.train.no_dataset"
+    )}}
+  
+  {{d-button
+    action="startTraining"
+    label="ml.admin.model.train.start"
+    class="btn-primary pull-right"
+    disabled=noDatasetIndex}}
 {{/d-modal-body}}

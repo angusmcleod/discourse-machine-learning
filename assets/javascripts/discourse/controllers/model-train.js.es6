@@ -1,15 +1,17 @@
 import Dataset from '../models/dataset';
+import { empty } from "@ember/object/computed";
 
 export default Ember.Controller.extend({
   datasetLabels: [],
   title: 'ml.admin.model.train.title',
+  noDatasetIndex: empty('datasetIndex'),
 
   setup: function() {
     Dataset.list().then((datasets) => {
       let datasetLabels = [];
       let value = 0;
       datasets.forEach((set) => {
-        datasetLabels.push({name: set.get('label'), value: value});
+        datasetLabels.push({name: set.get('label'), value});
         value++;
       })
       this.set('datasetLabels', datasetLabels)

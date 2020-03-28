@@ -1,5 +1,5 @@
 module Jobs
-  class BuildImage < Jobs::Base
+  class BuildImage < ::Jobs::Base
     sidekiq_options timeout: 1000
 
     def execute(args)

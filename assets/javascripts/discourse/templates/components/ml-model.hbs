@@ -1,20 +1,19 @@
-<div class="col value first label">
+<td>
   {{model.label}}
-</div>
-<div class="col value label">
+</td>
+<td>
   {{typeLabel}}
-</div>
-<div class="col value medium-label">
+</td>
+<td>
   {{model.image_name}}
-</div>
-<div class="col value label">
+</td>
+<td>
   <a {{action "goToRun" model}}>{{model.run_label}}</a>
-</div>
-<div class="col value label">
+</td>
+<td>
   {{statusLabel}}
-</div>
-<div class="col value large-label">
+</td>
+<td>
   {{d-button action="openTrainModel" actionParam=model class="btn btn-small" label="ml.admin.model.train.label"}}
   {{d-button action="openSelectRun" actionParam=model class="btn btn-small" label="ml.admin.model.run.label"}}
-</div>
-<div class="clearfix"></div>
+</td>

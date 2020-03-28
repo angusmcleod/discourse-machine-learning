@@ -1,23 +1,20 @@
-<div class='table ml'>
-  <div class="heading-container">
-    <div class="col heading first label">{{i18n 'ml.admin.dataset.label'}}</div>
-    <div class="col heading label">{{i18n 'ml.admin.model.label'}}</div>
-    <div class="col heading medium-label">{{i18n 'ml.admin.dataset.link'}}</div>
-    <div class="col heading large-label">{{i18n 'ml.admin.actions'}}</div>
+<table class='table ml'>
+  <thead>
+    <th>{{i18n 'ml.admin.dataset.label'}}</th>
+    <th>{{i18n 'ml.admin.model.label'}}</th>
+    <th>{{i18n 'ml.admin.dataset.link'}}</th>
+    <th>{{i18n 'ml.admin.actions'}}</th>
     {{d-button action="openDatasetUpload" class="btn" label="upload" icon="upload"}}
     {{#if activeLabel}}
       {{d-button action="clearFilter" class="btn-primary" label="admin.logs.staff_actions.clear_filters" icon="cross"}}
     {{/if}}
-    <div class="clearfix"></div>
-  </div>
-
-  {{#conditional-loading-spinner condition=loading}}
+  </thead>
+  
+  <tbody>
     {{#each visibleDatasets as |d|}}
-      <div class="admin-list-item">
-        {{ml-dataset dataset=d}}
-      </div>
+      {{ml-dataset dataset=d}}
     {{else}}
       {{i18n 'search.no_results'}}
     {{/each}}
-  {{/conditional-loading-spinner}}
-</div>
+  </tbody>
+</table>

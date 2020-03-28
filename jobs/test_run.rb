@@ -1,5 +1,5 @@
 module Jobs
-  class TestRun < Jobs::Base
+  class TestRun < ::Jobs::Base
     sidekiq_options timeout: 1000
 
     def execute(args)
